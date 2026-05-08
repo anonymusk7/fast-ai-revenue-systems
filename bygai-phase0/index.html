@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BygAI Floor-Plan Automation Phase 0</title>
+    <meta name="description" content="A fixed-fee feasibility phase for improving BygAI's floor-plan-to-painting-quote automation with computer vision and human review gates.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%23244f68'/%3E%3Ctext x='32' y='39' text-anchor='middle' font-family='Arial' font-size='22' font-weight='700' fill='white'%3EAI%3C/text%3E%3C/svg%3E">
+    <style>
+      :root {
+        --ink: #142126;
+        --muted: #5d6b70;
+        --paper: #f7f5ef;
+        --panel: #ffffff;
+        --line: #d8ddd3;
+        --blue: #244f68;
+        --green: #2b6f5a;
+        --red: #b43a31;
+        --gold: #e4bf5f;
+        --violet: #4e507e;
+        --wash: #eaf1ec;
+      }
+
+      * { box-sizing: border-box; }
+
+      html { scroll-behavior: smooth; }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      a { color: inherit; text-decoration: none; }
+
+      header,
+      section,
+      footer {
+        padding-inline: clamp(18px, 4vw, 58px);
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 72px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 850;
+      }
+
+      .mark {
+        display: grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 6px;
+        background: var(--blue);
+        color: #fff;
+      }
+
+      nav {
+        display: flex;
+        gap: 18px;
+        color: var(--muted);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.03fr) minmax(330px, 0.97fr);
+        gap: clamp(28px, 6vw, 76px);
+        align-items: center;
+        min-height: calc(100svh - 72px);
+        padding-block: clamp(48px, 7vw, 88px);
+      }
+
+      .hero > *,
+      .grid > *,
+      .split > *,
+      .pipeline > * {
+        min-width: 0;
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        color: var(--red);
+        font-size: 0.78rem;
+        font-weight: 850;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 12ch;
+        margin-bottom: 18px;
+        font-size: clamp(3rem, 6.3vw, 6.1rem);
+        line-height: 0.96;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin-bottom: 12px;
+        font-size: clamp(2rem, 4vw, 3.1rem);
+        line-height: 1.04;
+        letter-spacing: 0;
+      }
+
+      h3 {
+        margin-bottom: 8px;
+        font-size: 1.05rem;
+        letter-spacing: 0;
+      }
+
+      .lead {
+        max-width: 740px;
+        color: var(--muted);
+        font-size: 1.13rem;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 26px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 100%;
+        min-height: 46px;
+        padding: 12px 16px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-weight: 850;
+        text-align: center;
+      }
+
+      .btn.primary {
+        border-color: var(--red);
+        background: var(--red);
+        color: #fff;
+      }
+
+      .console {
+        display: grid;
+        gap: 12px;
+        width: 100%;
+        min-width: 0;
+        padding: clamp(18px, 3vw, 28px);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 18px 54px rgba(36, 79, 104, 0.13);
+      }
+
+      .console-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .pill {
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #f3e7bf;
+        color: #765811;
+        font-size: 0.78rem;
+        font-weight: 850;
+        white-space: nowrap;
+      }
+
+      .floorplan {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr 0.9fr;
+        grid-template-rows: 96px 84px 108px;
+        gap: 8px;
+        min-height: 320px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background:
+          linear-gradient(90deg, rgba(36, 79, 104, 0.08) 1px, transparent 1px),
+          linear-gradient(rgba(36, 79, 104, 0.08) 1px, transparent 1px),
+          #fbfcf8;
+        background-size: 24px 24px;
+      }
+
+      .room {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        min-width: 0;
+        padding: 12px;
+        border: 3px solid #263d46;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.78);
+      }
+
+      .room:nth-child(1) { grid-column: span 2; }
+      .room:nth-child(4) { grid-row: span 2; }
+      .room:nth-child(5) { grid-column: span 2; }
+
+      .room strong,
+      .room span {
+        position: relative;
+        z-index: 1;
+      }
+
+      .room span {
+        color: var(--muted);
+        font-size: 0.86rem;
+      }
+
+      .gate {
+        display: grid;
+        grid-template-columns: 42px 1fr auto;
+        gap: 12px;
+        align-items: center;
+        min-height: 66px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fbfcf8;
+      }
+
+      .icon {
+        display: grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 6px;
+        background: var(--wash);
+        color: var(--green);
+        font-weight: 900;
+      }
+
+      .gate strong { display: block; }
+
+      .gate p {
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 0.93rem;
+        overflow-wrap: anywhere;
+      }
+
+      .state {
+        min-width: 86px;
+        padding: 7px 9px;
+        border-radius: 6px;
+        background: #e5e5f1;
+        color: var(--violet);
+        font-size: 0.78rem;
+        font-weight: 850;
+        text-align: center;
+      }
+
+      .band {
+        padding-block: clamp(56px, 7vw, 92px);
+        background: var(--blue);
+        color: #fff;
+      }
+
+      .band .lead {
+        color: rgba(255, 255, 255, 0.76);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 28px;
+      }
+
+      .tile {
+        min-height: 226px;
+        padding: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .tile p {
+        color: rgba(255, 255, 255, 0.74);
+      }
+
+      .section {
+        padding-block: clamp(56px, 7vw, 92px);
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+        gap: 18px;
+        margin-top: 28px;
+      }
+
+      .panel {
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .price {
+        display: block;
+        margin: 10px 0 16px;
+        color: var(--red);
+        font-size: clamp(2.4rem, 5vw, 4.6rem);
+        font-weight: 900;
+        line-height: 0.95;
+      }
+
+      .panel ul {
+        display: grid;
+        gap: 10px;
+        margin: 0;
+        padding-left: 18px;
+        color: var(--muted);
+      }
+
+      .pipeline {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 28px;
+      }
+
+      .step {
+        min-height: 168px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .step span {
+        display: inline-grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        margin-bottom: 12px;
+        border-radius: 6px;
+        background: var(--wash);
+        color: var(--green);
+        font-weight: 900;
+      }
+
+      .step p {
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 0.94rem;
+      }
+
+      .note {
+        display: grid;
+        gap: 10px;
+        margin-top: 28px;
+        padding: 18px;
+        border: 1px solid #ead9a3;
+        border-radius: 8px;
+        background: #fbf3d8;
+        color: #705513;
+      }
+
+      footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding-block: 24px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+      }
+
+      @media (max-width: 960px) {
+        nav { display: none; }
+
+        .hero,
+        .split {
+          grid-template-columns: 1fr;
+        }
+
+        .hero {
+          min-height: auto;
+        }
+
+        h1 {
+          max-width: 10ch;
+        }
+
+        .grid,
+        .pipeline {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 620px) {
+        header {
+          align-items: flex-start;
+          flex-direction: column;
+          justify-content: center;
+          gap: 10px;
+          padding-block: 14px;
+        }
+
+        .hero {
+          padding-block: 38px 52px;
+        }
+
+        .floorplan {
+          grid-template-columns: 1fr;
+          grid-template-rows: repeat(5, minmax(74px, auto));
+          min-height: auto;
+        }
+
+        .room:nth-child(1),
+        .room:nth-child(4),
+        .room:nth-child(5) {
+          grid-column: auto;
+          grid-row: auto;
+        }
+
+        .gate {
+          grid-template-columns: 38px 1fr;
+        }
+
+        .state {
+          grid-column: 1 / -1;
+          width: fit-content;
+        }
+
+        .grid,
+        .pipeline {
+          grid-template-columns: 1fr;
+        }
+
+        footer {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="../">
+        <span class="mark">AI</span>
+        <span>Fast AI Revenue Systems</span>
+      </a>
+      <nav aria-label="Proposal navigation">
+        <a href="#phase">Phase 0</a>
+        <a href="#method">Method</a>
+        <a href="#start">Start</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Prepared for BlueStork AI / BygAI</p>
+          <h1>Floor-plan automation Phase 0.</h1>
+          <p class="lead">A fixed-fee feasibility sprint for the hard part of BygAI: improving the semi-automatic floor-plan workflow with computer vision, confidence gates, and a faster human review loop for painting quotes.</p>
+          <div class="actions">
+            <a class="btn primary" href="#start">Review fixed scope</a>
+            <a class="btn" href="#method">See technical path</a>
+          </div>
+        </div>
+
+        <aside class="console" aria-label="Floor-plan automation feasibility console">
+          <div class="console-head">
+            <strong>Feasibility console</strong>
+            <span class="pill">Operator-safe CV</span>
+          </div>
+          <div class="floorplan" aria-label="Simplified floor-plan with detected rooms">
+            <div class="room"><strong>Living room</strong><span>high confidence</span></div>
+            <div class="room"><strong>Kitchen</strong><span>scale check</span></div>
+            <div class="room"><strong>Hall</strong><span>review</span></div>
+            <div class="room"><strong>Bedroom</strong><span>high confidence</span></div>
+            <div class="room"><strong>Bath</strong><span>manual gate</span></div>
+          </div>
+          <div class="gate">
+            <span class="icon">1</span>
+            <div>
+              <strong>Extract measurements</strong>
+              <p>Walls, ceilings, room grouping, scale markers, and quote-ready surface estimates.</p>
+            </div>
+            <span class="state">test</span>
+          </div>
+          <div class="gate">
+            <span class="icon">2</span>
+            <div>
+              <strong>Flag uncertain cases</strong>
+              <p>Low-confidence drawings route to operator review before they affect a customer quote.</p>
+            </div>
+            <span class="state">guard</span>
+          </div>
+        </aside>
+      </section>
+
+      <section class="band" id="method">
+        <p class="eyebrow">The realistic target</p>
+        <h2>Automate the repeatable cases, catch the hard cases early.</h2>
+        <p class="lead">The goal is not to promise a universal floor-plan parser before seeing BygAI's real distribution. The useful first win is a controlled pipeline that increases throughput while making failure obvious.</p>
+        <div class="grid">
+          <article class="tile">
+            <h3>Case taxonomy</h3>
+            <p>Separate clean digital plans, scanned plans, low-resolution images, multi-unit pages, missing-scale plans, and visually noisy layouts.</p>
+          </article>
+          <article class="tile">
+            <h3>Measurement gates</h3>
+            <p>Define checks for scale, wall continuity, room closure, openings, ceiling assumptions, and quote-relevant surface grouping.</p>
+          </article>
+          <article class="tile">
+            <h3>Human review speed</h3>
+            <p>Design the operator checkpoints so the system asks for the smallest correction that unlocks the next automation step.</p>
+          </article>
+          <article class="tile">
+            <h3>Implementation slice</h3>
+            <p>End Phase 0 with the next narrow build target, a data contract, and success criteria for production automation.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="phase">
+        <p class="eyebrow">Paid Phase 0</p>
+        <h2>Fixed scope, fast decision.</h2>
+        <p class="lead">Use five representative anonymized floor plans to decide what can be automated reliably now, what needs review, and what the first paid implementation milestone should include.</p>
+        <div class="split">
+          <article class="panel">
+            <h3>Price</h3>
+            <strong class="price">$1,200</strong>
+            <p class="lead">100% to start, credited toward the implementation milestone if started within 7 days.</p>
+          </article>
+          <article class="panel">
+            <h3>Deliverables</h3>
+            <ul>
+              <li>Review of five anonymized representative floor-plan examples.</li>
+              <li>Feasibility boundary with failure modes and confidence gates.</li>
+              <li>Proposed data schema for extracted rooms, walls, ceilings, scale, and quote surfaces.</li>
+              <li>One narrow proof path or implementation-ready technical memo.</li>
+              <li>Delivery target: 3-5 business days after examples and payment confirmation.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="note">
+          <strong>Boundary</strong>
+          <span>This Phase 0 does not promise a fully general production algorithm. It exists to decide, with evidence, where computer vision can safely reduce manual work and where operator review remains necessary.</span>
+        </div>
+      </section>
+
+      <section class="section" id="start">
+        <p class="eyebrow">Start sequence</p>
+        <h2>What happens after the call.</h2>
+        <div class="pipeline">
+          <article class="step">
+            <span>1</span>
+            <h3>Confirm target</h3>
+            <p>Pick the single highest-friction manual step inside the current BygAI workflow.</p>
+          </article>
+          <article class="step">
+            <span>2</span>
+            <h3>Send examples</h3>
+            <p>Provide five anonymized plans: clean, typical, noisy, edge case, and current-system failure.</p>
+          </article>
+          <article class="step">
+            <span>3</span>
+            <h3>Set payment route</h3>
+            <p>Choose Stripe, PayPal, Wise, bank transfer, or another preferred route for the Phase 0 invoice.</p>
+          </article>
+          <article class="step">
+            <span>4</span>
+            <h3>Run analysis</h3>
+            <p>Map extraction strategy, failure modes, human gates, and implementation constraints.</p>
+          </article>
+          <article class="step">
+            <span>5</span>
+            <h3>Decide build</h3>
+            <p>Proceed only if the next milestone has a narrow success metric and a credible operator fallback.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Prepared for BlueStork AI / BygAI</span>
+      <span>Fixed Phase 0: USD $1,200</span>
+    </footer>
+  </body>
+</html>
