@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI SMS/MMS Automation Build Plan</title>
+    <meta name="description" content="A concise build plan for an AI-powered SMS/MMS automation system using Make, Sinch, Claude, external APIs, and data stores.">
+    <style>
+      :root {
+        --ink: #151515;
+        --muted: #5d646a;
+        --paper: #fbfaf7;
+        --panel: #ffffff;
+        --line: #ddd6cc;
+        --accent: #b72a21;
+        --steel: #28404d;
+        --mint: #dce8df;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      a { color: inherit; text-decoration: none; }
+
+      header, section, footer { padding-inline: clamp(18px, 4vw, 56px); }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 72px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 850;
+      }
+
+      .mark {
+        display: grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 6px;
+        background: var(--steel);
+        color: #fff;
+      }
+
+      nav {
+        display: flex;
+        gap: 18px;
+        color: var(--muted);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+        gap: clamp(28px, 6vw, 74px);
+        align-items: center;
+        min-height: calc(100svh - 72px);
+        padding-block: clamp(54px, 7vw, 96px);
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        color: var(--accent);
+        font-size: 0.78rem;
+        font-weight: 850;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      h1, h2, h3, p { margin-top: 0; }
+
+      h1 {
+        max-width: 13ch;
+        margin-bottom: 18px;
+        font-size: clamp(3rem, 6.4vw, 5.9rem);
+        line-height: 0.96;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin-bottom: 12px;
+        font-size: clamp(2rem, 4vw, 3.2rem);
+        line-height: 1.04;
+        letter-spacing: 0;
+      }
+
+      .lead {
+        max-width: 780px;
+        color: var(--muted);
+        font-size: 1.12rem;
+      }
+
+      .panel {
+        padding: 26px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 18px 50px rgba(40, 64, 77, 0.1);
+      }
+
+      .price {
+        display: block;
+        margin: 8px 0 14px;
+        color: var(--accent);
+        font-size: clamp(2.7rem, 6vw, 4.6rem);
+        font-weight: 900;
+        line-height: 1;
+      }
+
+      .checklist {
+        display: grid;
+        gap: 10px;
+        margin: 18px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .checklist li {
+        padding: 11px 12px;
+        border-radius: 6px;
+        background: #f1eee7;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 26px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 12px 16px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-weight: 850;
+      }
+
+      .btn.primary {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .band {
+        padding-block: clamp(56px, 7vw, 92px);
+        background: var(--steel);
+        color: #fff;
+      }
+
+      .band .lead { color: rgba(255, 255, 255, 0.78); }
+
+      .flow {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .step {
+        min-height: 210px;
+        padding: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .step strong {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--mint);
+      }
+
+      .step p { color: rgba(255, 255, 255, 0.74); }
+
+      .section { padding-block: clamp(56px, 7vw, 92px); }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 28px;
+      }
+
+      .tile {
+        min-height: 220px;
+        padding: 22px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .tile p { color: var(--muted); }
+
+      footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding-block: 24px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+      }
+
+      @media (max-width: 1180px) {
+        .flow { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      }
+
+      @media (max-width: 880px) {
+        header, footer {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero, .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .flow { grid-template-columns: 1fr; }
+
+        nav {
+          width: 100%;
+          overflow-x: auto;
+          padding-bottom: 3px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/fast-ai-revenue-systems/workflow-sprint/">
+        <span class="mark">SMS</span>
+        <span>AI SMS/MMS Automation Build Plan</span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a href="#architecture">Architecture</a>
+        <a href="#controls">Controls</a>
+        <a href="#start">Start</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">For SnipeAgent's Make + Sinch + Claude build</p>
+          <h1>AI SMS/MMS automation system</h1>
+          <p class="lead">
+            A focused build plan for receiving inbound SMS and MMS, routing media
+            through AI, firing parallel data lookups, protecting concurrent searches,
+            and returning formatted replies with analytics and re-engagement state.
+          </p>
+          <div class="actions">
+            <a class="btn primary" href="mailto:nanznakul@gmail.com?subject=AI%20SMS%20automation%20pilot">Request milestone scope</a>
+            <a class="btn" href="/fast-ai-revenue-systems/workflow-sprint/">Workflow sprint menu</a>
+          </div>
+        </div>
+        <aside class="panel" id="start">
+          <span>Fast first step</span>
+          <strong class="price">$299 audit</strong>
+          <p>Map the six-scenario Make architecture, data stores, locking logic, API contracts, and milestone demo path. Credited toward a fixed implementation if the scope fits.</p>
+          <ul class="checklist">
+            <li>30/30/40 milestone split compatible</li>
+            <li>Video-demo checkpoints after each milestone</li>
+            <li>PayPal, direct invoice, or mutually agreed route</li>
+          </ul>
+        </aside>
+      </section>
+
+      <section class="band" id="architecture">
+        <p class="eyebrow">Scenario architecture</p>
+        <h2>Separate message handling from expensive decisions</h2>
+        <p class="lead">The system should keep inbound capture, media processing, search orchestration, response generation, and re-engagement state separate enough to test and recover each part.</p>
+        <div class="flow">
+          <article class="step">
+            <strong>1. Inbound Webhook</strong>
+            <p>Receive Sinch SMS/MMS payloads, normalize phone numbers to E.164, and create a request record.</p>
+          </article>
+          <article class="step">
+            <strong>2. Media Handler</strong>
+            <p>Download MMS images, validate file size/type, base64 encode, and attach media metadata for AI processing.</p>
+          </article>
+          <article class="step">
+            <strong>3. User Lock</strong>
+            <p>Use a per-phone data-store lock with timeout cleanup to prevent overlapping searches from the same user.</p>
+          </article>
+          <article class="step">
+            <strong>4. Parallel APIs</strong>
+            <p>Fire Rainforest and SerpApi branches in parallel, record response timing, and normalize the result schema.</p>
+          </article>
+          <article class="step">
+            <strong>5. Claude Reply</strong>
+            <p>Send structured context to Claude Haiku and return a concise SMS-safe answer with fallback copy.</p>
+          </article>
+          <article class="step">
+            <strong>6. Tracking</strong>
+            <p>Update users, analytics, savings, redirect tracking, and re-engagement state without blocking the reply.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="controls">
+        <p class="eyebrow">Reliability controls</p>
+        <h2>Failure paths should be designed before the demo</h2>
+        <div class="grid">
+          <article class="tile">
+            <h3>Concurrency</h3>
+            <p>Every inbound message checks a user-level lock first. Stale locks should expire so a failed scenario does not trap a user forever.</p>
+          </article>
+          <article class="tile">
+            <h3>Cost Boundaries</h3>
+            <p>Skip expensive API or AI calls when payloads are invalid, duplicate, too large, or already in-flight.</p>
+          </article>
+          <article class="tile">
+            <h3>Milestone Demo</h3>
+            <p>Demo with synthetic SMS, MMS, slow API, failed API, duplicate message, and re-engagement cases before touching live traffic.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>AI SMS/MMS Automation Build Plan</span>
+      <span>Make, Sinch, Claude, Rainforest, SerpApi</span>
+    </footer>
+  </body>
+</html>
