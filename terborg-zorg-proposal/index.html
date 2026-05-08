@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Terborg Zorg Automation Ops Proposal</title>
+    <meta name="description" content="A focused n8n, Supabase, GoHighLevel, and Claude implementation slice for Terborg Zorg's healthcare recruitment onboarding workflow.">
+    <style>
+      :root {
+        --ink: #152025;
+        --muted: #5b6870;
+        --paper: #f7f6f0;
+        --panel: #ffffff;
+        --line: #d7ddd6;
+        --teal: #1f665f;
+        --red: #b34338;
+        --amber: #e5bd59;
+        --violet: #51507a;
+        --mint: #e4f0ea;
+        --soft: #f1efe7;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      a { color: inherit; text-decoration: none; }
+
+      header, section, footer { padding-inline: clamp(18px, 4vw, 58px); }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 72px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 850;
+      }
+
+      .mark {
+        display: grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 6px;
+        background: var(--teal);
+        color: #fff;
+      }
+
+      nav {
+        display: flex;
+        gap: 18px;
+        color: var(--muted);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.02fr) minmax(330px, 0.98fr);
+        gap: clamp(28px, 6vw, 76px);
+        align-items: center;
+        min-height: calc(100svh - 72px);
+        padding-block: clamp(48px, 7vw, 88px);
+      }
+
+      .hero > *,
+      .plans > *,
+      .demo > *,
+      .grid > * {
+        min-width: 0;
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        color: var(--red);
+        font-size: 0.78rem;
+        font-weight: 850;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      h1, h2, h3, p { margin-top: 0; }
+
+      h1 {
+        max-width: 12ch;
+        margin-bottom: 18px;
+        font-size: clamp(3rem, 6.4vw, 6.1rem);
+        line-height: 0.96;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin-bottom: 12px;
+        font-size: clamp(2rem, 4vw, 3.1rem);
+        line-height: 1.04;
+        letter-spacing: 0;
+      }
+
+      h3 {
+        margin-bottom: 8px;
+        font-size: 1.05rem;
+        letter-spacing: 0;
+      }
+
+      .lead {
+        max-width: 740px;
+        color: var(--muted);
+        font-size: 1.13rem;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 26px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 100%;
+        min-height: 46px;
+        padding: 12px 16px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-weight: 850;
+        text-align: center;
+      }
+
+      .btn.primary {
+        border-color: var(--red);
+        background: var(--red);
+        color: #fff;
+      }
+
+      .ops-board {
+        display: grid;
+        gap: 12px;
+        width: 100%;
+        min-width: 0;
+        padding: clamp(18px, 3vw, 28px);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 18px 54px rgba(31, 102, 95, 0.13);
+      }
+
+      .ops-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .pill {
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #f3e7bf;
+        color: #71550d;
+        font-size: 0.78rem;
+        font-weight: 850;
+        white-space: nowrap;
+      }
+
+      .stack-map {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .node {
+        min-height: 92px;
+        padding: 13px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fbfcf9;
+      }
+
+      .node span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        margin-bottom: 10px;
+        border-radius: 6px;
+        background: var(--mint);
+        color: var(--teal);
+        font-weight: 900;
+      }
+
+      .node strong { display: block; }
+
+      .node p,
+      .signal p {
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+        overflow-wrap: anywhere;
+      }
+
+      .signal {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: center;
+        min-height: 76px;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--soft);
+      }
+
+      .tag {
+        min-width: 82px;
+        padding: 7px 9px;
+        border-radius: 6px;
+        background: #e5e4f1;
+        color: var(--violet);
+        font-size: 0.78rem;
+        font-weight: 850;
+        text-align: center;
+      }
+
+      .bar {
+        display: grid;
+        grid-template-columns: 1fr 0.74fr 0.52fr;
+        gap: 8px;
+        min-height: 44px;
+        padding: 10px;
+        border-radius: 8px;
+        background: #132125;
+      }
+
+      .bar span {
+        border-radius: 5px;
+        background: var(--amber);
+      }
+
+      .bar span:nth-child(2) { background: var(--teal); }
+      .bar span:nth-child(3) { background: var(--red); }
+
+      .band {
+        padding-block: clamp(56px, 7vw, 92px);
+        background: #17383a;
+        color: #fff;
+      }
+
+      .band .lead { color: rgba(255, 255, 255, 0.76); }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 28px;
+      }
+
+      .tile {
+        min-height: 232px;
+        padding: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .tile p { color: rgba(255, 255, 255, 0.74); }
+
+      .section { padding-block: clamp(56px, 7vw, 92px); }
+
+      .demo {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 28px;
+      }
+
+      .demo-card {
+        min-height: 328px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .mono {
+        overflow: auto;
+        min-height: 210px;
+        margin: 12px 0 0;
+        padding: 14px;
+        border-radius: 6px;
+        background: #11191f;
+        color: #e8f0ed;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 0.8rem;
+        line-height: 1.45;
+        white-space: pre-wrap;
+      }
+
+      .plans {
+        display: grid;
+        grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+        gap: 16px;
+        margin-top: 28px;
+      }
+
+      .plan {
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .plan.featured {
+        border-color: rgba(179, 67, 56, 0.46);
+        box-shadow: 0 18px 48px rgba(179, 67, 56, 0.11);
+      }
+
+      .price {
+        display: block;
+        margin: 8px 0 14px;
+        color: var(--red);
+        font-size: clamp(2.5rem, 6vw, 4.6rem);
+        font-weight: 900;
+        line-height: 1;
+      }
+
+      .list {
+        display: grid;
+        gap: 10px;
+        margin: 18px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .list li {
+        padding: 11px 12px;
+        border-radius: 6px;
+        background: #eef1ec;
+      }
+
+      footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding-block: 24px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+      }
+
+      @media (max-width: 980px) {
+        .hero,
+        .plans,
+        .demo {
+          grid-template-columns: 1fr;
+        }
+
+        .grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 760px) {
+        .stack-map {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 680px) {
+        header,
+        footer {
+          align-items: flex-start;
+          flex-direction: column;
+          justify-content: flex-start;
+        }
+
+        nav {
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+
+        .actions {
+          display: grid;
+          grid-template-columns: 1fr;
+        }
+
+        .btn {
+          width: 100%;
+        }
+
+        .hero {
+          min-height: auto;
+        }
+
+        h1 {
+          max-width: 100%;
+          font-size: clamp(2.35rem, 13vw, 3.25rem);
+        }
+
+        .grid,
+        .stack-map {
+          grid-template-columns: 1fr;
+        }
+
+        .ops-head,
+        .signal {
+          align-items: flex-start;
+          flex-direction: column;
+          grid-template-columns: 1fr;
+        }
+
+        .tag {
+          justify-self: start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="../">
+        <span class="mark">AI</span>
+        <span>Nakul Automation Systems</span>
+      </a>
+      <nav aria-label="Page navigation">
+        <a href="#scope">Scope</a>
+        <a href="#demo">Control pattern</a>
+        <a href="#pricing">Pricing</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Prepared for Terborg Zorg</p>
+          <h1>Onboarding ops control layer</h1>
+          <p class="lead">A focused n8n, Supabase, GoHighLevel, and Claude implementation slice for the healthcare recruitment workflow Zayn described: keep candidate states synchronized, catch failed handoffs, and make blocked onboarding cases visible before they quietly pile up.</p>
+          <div class="actions">
+            <a class="btn primary" href="mailto:nanznakul@gmail.com?subject=Terborg%20Zorg%20automation%20control%20audit">Start with the audit</a>
+            <a class="btn" href="#demo">View the control pattern</a>
+          </div>
+        </div>
+
+        <div class="ops-board" aria-label="Recruitment automation control preview">
+          <div class="ops-head">
+            <strong>Recruitment workflow spine</strong>
+            <span class="pill">48 hour first pass</span>
+          </div>
+          <div class="stack-map">
+            <div class="node">
+              <span>1</span>
+              <strong>Meta lead</strong>
+              <p>Capture source, consent flag, and campaign context.</p>
+            </div>
+            <div class="node">
+              <span>2</span>
+              <strong>GHL stage</strong>
+              <p>Mirror status without making it the hidden truth.</p>
+            </div>
+            <div class="node">
+              <span>3</span>
+              <strong>n8n router</strong>
+              <p>Validate payloads, retries, and branch reasons.</p>
+            </div>
+            <div class="node">
+              <span>4</span>
+              <strong>Supabase record</strong>
+              <p>Keep the canonical candidate and onboarding state.</p>
+            </div>
+          </div>
+          <div class="signal">
+            <div>
+              <strong>Claude writes suggestions, not silent truth</strong>
+              <p>Outputs are schema-checked, confidence-gated, and routed to human review when key fields conflict.</p>
+            </div>
+            <span class="tag">Guarded</span>
+          </div>
+          <div class="bar" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="band" id="scope">
+        <p class="eyebrow">What gets stabilized first</p>
+        <h2>Make the existing stack reliable before adding more automation.</h2>
+        <p class="lead">The first slice is not a rebuild. It is a control pass across the handoffs that usually break in healthcare recruitment: ad lead capture, CRM state, automation retries, AI extraction, document status, and signed-contract handoff.</p>
+        <div class="grid">
+          <article class="tile">
+            <h3>Candidate state map</h3>
+            <p>Define the canonical stages from lead to signed contract, including blocked and needs-review states.</p>
+          </article>
+          <article class="tile">
+            <h3>Supabase source of truth</h3>
+            <p>Keep candidate, document, consent, and stage fields clear enough for reconciliation jobs.</p>
+          </article>
+          <article class="tile">
+            <h3>n8n failure handling</h3>
+            <p>Add retry rules, dead-letter rows, and alerts that say exactly which handoff failed.</p>
+          </article>
+          <article class="tile">
+            <h3>AI output controls</h3>
+            <p>Schema-check Claude outputs before writing to CRM or onboarding records, with human review for conflicts.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="demo">
+        <p class="eyebrow">Implementation sketch</p>
+        <h2>A concrete control pattern for the Terborg Zorg stack.</h2>
+        <p class="lead">The exact table names and node IDs would adapt to the live workspace. The important part is making every automation step explainable, replayable, and safe to pause when the data is not ready.</p>
+        <div class="demo">
+          <article class="demo-card">
+            <h3>1. Canonical candidate record</h3>
+            <p>Supabase holds the shared state instead of letting tools drift.</p>
+            <pre class="mono">candidate_id: tz_10482
+source: meta_ads
+ghl_stage: intake_booked
+canonical_stage: document_check
+consent_logged: true
+blocked_reason: null</pre>
+          </article>
+          <article class="demo-card">
+            <h3>2. AI extraction is validated</h3>
+            <p>Claude returns typed fields that pass checks before updates.</p>
+            <pre class="mono">{
+  "work_authorization": "zzp",
+  "certificates": ["BHV"],
+  "availability": "night shifts",
+  "confidence": 0.91,
+  "needs_review": false
+}</pre>
+          </article>
+          <article class="demo-card">
+            <h3>3. Failed handoffs get surfaced</h3>
+            <p>n8n routes bad states to review, not silent retries.</p>
+            <pre class="mono">if doc_status_conflict:
+  write_dead_letter_row()
+  notify_ops(
+    candidate_id,
+    reason="contract signed before doc check"
+  )
+else:
+  sync_ghl_stage()</pre>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="pricing">
+        <p class="eyebrow">Fast engagement options</p>
+        <h2>Small paid start, clear production path.</h2>
+        <p class="lead">Both options assume Terborg Zorg keeps its current stack. I would start from screenshots, workflow exports, or limited access to the relevant n8n scenarios and Supabase schema.</p>
+        <div class="plans">
+          <article class="plan">
+            <h3>Workflow control audit</h3>
+            <span class="price">$299</span>
+            <p>Credited toward the implementation slice if started within seven days.</p>
+            <ul class="list">
+              <li>Map the current Meta Ads to GHL to n8n to Supabase path</li>
+              <li>Identify state drift, retry loops, missing alerts, and fragile AI outputs</li>
+              <li>Return a prioritized repair map and a live walkthrough</li>
+            </ul>
+          </article>
+          <article class="plan featured">
+            <h3>First production control slice</h3>
+            <span class="price">$1,250</span>
+            <p>Fixed scope for the first reliable version of the onboarding control layer.</p>
+            <ul class="list">
+              <li>Candidate state map and Supabase control fields</li>
+              <li>n8n validation, retry, dead-letter, and blocked-case alerting path</li>
+              <li>Claude output schema checks before CRM or onboarding writes</li>
+              <li>Test cases, operator notes, and handoff walkthrough</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Nakul Automation Systems</span>
+      <span>Prepared as a direct response to Terborg Zorg's public n8n automation post.</span>
+    </footer>
+  </body>
+</html>
