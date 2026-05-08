@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RestaurantFlow OS n8n Implementation Slice</title>
+    <meta name="description" content="A scoped n8n implementation slice for RestaurantFlow OS: per-restaurant isolation, idempotent booking webhooks, Supabase records, GHL personalization, PrintNode, and weather-aware workflows.">
+    <style>
+      :root {
+        --ink: #161c22;
+        --muted: #5f6b73;
+        --paper: #f6f7f3;
+        --panel: #ffffff;
+        --line: #d8ddd5;
+        --accent: #a83232;
+        --blue: #1e5166;
+        --green: #2e745b;
+        --cream: #f1eadf;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      a { color: inherit; text-decoration: none; }
+
+      header, section, footer { padding-inline: clamp(18px, 4vw, 56px); }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 72px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 850;
+      }
+
+      .mark {
+        display: grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 6px;
+        background: var(--blue);
+        color: #fff;
+      }
+
+      nav {
+        display: flex;
+        gap: 18px;
+        color: var(--muted);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.04fr) minmax(330px, 0.96fr);
+        gap: clamp(28px, 6vw, 76px);
+        align-items: center;
+        min-height: calc(100svh - 72px);
+        padding-block: clamp(52px, 7vw, 92px);
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        color: var(--accent);
+        font-size: 0.78rem;
+        font-weight: 850;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      h1, h2, h3, p { margin-top: 0; }
+
+      h1 {
+        max-width: 12ch;
+        margin-bottom: 18px;
+        font-size: clamp(3rem, 6.4vw, 6.2rem);
+        line-height: 0.96;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin-bottom: 12px;
+        font-size: clamp(2rem, 4vw, 3.1rem);
+        line-height: 1.04;
+        letter-spacing: 0;
+      }
+
+      .lead {
+        max-width: 720px;
+        color: var(--muted);
+        font-size: 1.13rem;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 26px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 12px 16px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-weight: 850;
+      }
+
+      .btn.primary {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .ops-board {
+        display: grid;
+        gap: 12px;
+        padding: clamp(18px, 3vw, 28px);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 18px 54px rgba(30, 81, 102, 0.13);
+      }
+
+      .ops-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .pill {
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: var(--cream);
+        color: var(--blue);
+        font-size: 0.78rem;
+        font-weight: 850;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 42px 1fr auto;
+        gap: 12px;
+        align-items: center;
+        min-height: 66px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fbfcf9;
+      }
+
+      .num {
+        display: grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 6px;
+        background: #dce9e4;
+        color: var(--green);
+        font-weight: 900;
+      }
+
+      .row strong { display: block; }
+
+      .row p {
+        margin-bottom: 0;
+        color: var(--muted);
+      }
+
+      .band {
+        padding-block: clamp(56px, 7vw, 92px);
+        background: var(--blue);
+        color: #fff;
+      }
+
+      .band .lead { color: rgba(255, 255, 255, 0.76); }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 28px;
+      }
+
+      .tile {
+        min-height: 230px;
+        padding: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .tile p { color: rgba(255, 255, 255, 0.74); }
+
+      .section { padding-block: clamp(56px, 7vw, 92px); }
+
+      .plans {
+        display: grid;
+        grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+        gap: 16px;
+        margin-top: 28px;
+      }
+
+      .plan {
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .plan.highlight { background: #fff0ea; }
+
+      .price {
+        display: block;
+        margin: 8px 0 12px;
+        color: var(--accent);
+        font-size: clamp(2.6rem, 5vw, 4.5rem);
+        font-weight: 900;
+        line-height: 1;
+      }
+
+      .checklist {
+        display: grid;
+        gap: 10px;
+        margin: 18px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .checklist li {
+        padding: 11px 12px;
+        border-radius: 6px;
+        background: #eef1ec;
+      }
+
+      .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 28px;
+      }
+
+      .detail {
+        padding: 22px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .detail p { color: var(--muted); }
+
+      footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding-block: 24px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+      }
+
+      @media (max-width: 1120px) {
+        .grid, .detail-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 880px) {
+        header, footer {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero, .plans, .grid, .detail-grid {
+          grid-template-columns: 1fr;
+        }
+
+        nav {
+          width: 100%;
+          overflow-x: auto;
+          padding-bottom: 3px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/fast-ai-revenue-systems/">
+        <span class="mark">RF</span>
+        <span>RestaurantFlow OS Slice</span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a href="#risk">Risk</a>
+        <a href="#scope">Scope</a>
+        <a href="#start">Start</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">For RestaurantFlow OS</p>
+          <h1>Build the first workflow group without state bleed</h1>
+          <p class="lead">
+            A scoped n8n implementation slice for the written RestaurantFlow OS spec:
+            booking webhook intake, restaurant-scoped validation, Supabase persistence,
+            GHL personalization, PrintNode handoff, weather-aware routing, and a Loom-style
+            walkthrough for each workflow decision.
+          </p>
+          <div class="actions">
+            <a class="btn primary" href="mailto:nanznakul@gmail.com?subject=RestaurantFlow%20OS%20n8n%20implementation%20slice">Start technical trial</a>
+            <a class="btn" href="#scope">View scope</a>
+          </div>
+        </div>
+        <aside class="ops-board" aria-label="RestaurantFlow workflow slice">
+          <div class="ops-head">
+            <strong>Booking Event Path</strong>
+            <span class="pill">idempotent</span>
+          </div>
+          <article class="row">
+            <span class="num">1</span>
+            <div>
+              <strong>OpenTable / SevenRooms webhook</strong>
+              <p>Normalize inbound payloads and reject events missing a valid restaurant_id.</p>
+            </div>
+            <span class="pill">n8n</span>
+          </article>
+          <article class="row">
+            <span class="num">2</span>
+            <div>
+              <strong>Supabase state check</strong>
+              <p>Use idempotency keys so retries do not duplicate records or messages.</p>
+            </div>
+            <span class="pill">SQL</span>
+          </article>
+          <article class="row">
+            <span class="num">3</span>
+            <div>
+              <strong>GHL + personalization route</strong>
+              <p>Segment guest follow-up by visit history, timing, weather, and restaurant rules.</p>
+            </div>
+            <span class="pill">API</span>
+          </article>
+          <article class="row">
+            <span class="num">4</span>
+            <div>
+              <strong>PrintNode and audit log</strong>
+              <p>Send the print job or fallback alert, then log the full decision trail.</p>
+            </div>
+            <span class="pill">ops</span>
+          </article>
+        </aside>
+      </section>
+
+      <section class="band" id="risk">
+        <p class="eyebrow">Implementation risks</p>
+        <h2>The build lives or dies on isolation, replay, and explainability</h2>
+        <p class="lead">
+          RestaurantFlow OS already has a precise architecture. The useful contribution is disciplined execution:
+          every workflow validates restaurant scope first, every outbound action has an idempotency check,
+          every failure has a recovery path, and every workflow group is documented clearly enough to hand over.
+        </p>
+        <div class="grid">
+          <article class="tile">
+            <h3>Tenant Isolation</h3>
+            <p>restaurant_id validation happens before any read, write, message, print, or personalization branch.</p>
+          </article>
+          <article class="tile">
+            <h3>Webhook Idempotency</h3>
+            <p>Retries and duplicate booking events are safe because actions are keyed before mutation.</p>
+          </article>
+          <article class="tile">
+            <h3>Error Routing</h3>
+            <p>Invalid payloads, API failures, and printer failures land in inspectable queues with context.</p>
+          </article>
+          <article class="tile">
+            <h3>Loom-Style Handoff</h3>
+            <p>Each workflow group gets a decision walkthrough, test cases, and operating notes.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="scope">
+        <p class="eyebrow">Paid trial path</p>
+        <h2>Start with one workflow group, then scale into retainer work</h2>
+        <div class="plans" id="start">
+          <article class="plan highlight">
+            <span>Spec review and build plan</span>
+            <strong class="price">$299</strong>
+            <p>Review the master spec for one workflow group, return the field map, idempotency design, failure cases, and fixed implementation quote.</p>
+            <ul class="checklist">
+              <li>n8n node-by-node build plan</li>
+              <li>Supabase table and key assumptions</li>
+              <li>GHL, PrintNode, and weather API edge cases</li>
+            </ul>
+          </article>
+          <article class="plan">
+            <span>Implementation slice</span>
+            <strong class="price">$1,250+</strong>
+            <p>Build the first agreed workflow group against dummy/test payloads, with logs, replay notes, and a handoff walkthrough. Final quote depends on spec depth.</p>
+            <ul class="checklist">
+              <li>Webhook intake and restaurant_id guard</li>
+              <li>Supabase insert/update with idempotency keys</li>
+              <li>GHL action route with personalization variables</li>
+              <li>PrintNode action or fallback alert</li>
+              <li>Test fixtures and Loom-style walkthrough script</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <p class="eyebrow">Inputs needed</p>
+        <h2>What I would request first</h2>
+        <div class="detail-grid">
+          <article class="detail">
+            <h3>One workflow group</h3>
+            <p>The first workflow group from the master spec, preferably with dummy OpenTable or SevenRooms payloads.</p>
+          </article>
+          <article class="detail">
+            <h3>State contract</h3>
+            <p>Supabase table assumptions, restaurant_id validation rules, and desired idempotency key format.</p>
+          </article>
+          <article class="detail">
+            <h3>Outbound rules</h3>
+            <p>Which GHL, PrintNode, and weather-dependent actions are allowed during the test build.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>RestaurantFlow OS Implementation Slice</span>
+      <span>n8n, Supabase, GHL, PrintNode, weather, and booking data.</span>
+    </footer>
+  </body>
+</html>
