@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>48-Hour AI Workflow Sprint</title>
+    <meta name="description" content="A fixed-scope $1,250 sprint to ship one useful AI-assisted workflow, quote flow, intake flow, or internal tool.">
+    <style>
+      :root {
+        --ink: #151515;
+        --muted: #5d646a;
+        --paper: #fbfaf7;
+        --panel: #ffffff;
+        --line: #ddd6cc;
+        --accent: #b72a21;
+        --steel: #28404d;
+        --green: #dce8df;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      a { color: inherit; text-decoration: none; }
+
+      header, section, footer { padding-inline: clamp(18px, 4vw, 56px); }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 72px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 850;
+      }
+
+      .mark {
+        display: grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 6px;
+        background: var(--steel);
+        color: #fff;
+      }
+
+      nav {
+        display: flex;
+        gap: 18px;
+        color: var(--muted);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+        gap: clamp(28px, 6vw, 74px);
+        align-items: center;
+        min-height: calc(100svh - 72px);
+        padding-block: clamp(54px, 7vw, 96px);
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        color: var(--accent);
+        font-size: 0.78rem;
+        font-weight: 850;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      h1, h2, h3, p { margin-top: 0; }
+
+      h1 {
+        max-width: 12ch;
+        margin-bottom: 18px;
+        font-size: clamp(3.1rem, 7vw, 6.6rem);
+        line-height: 0.95;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin-bottom: 12px;
+        font-size: clamp(2rem, 4vw, 3.25rem);
+        line-height: 1.04;
+        letter-spacing: 0;
+      }
+
+      .lead {
+        max-width: 720px;
+        color: var(--muted);
+        font-size: 1.15rem;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 26px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 12px 16px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-weight: 850;
+      }
+
+      .btn.primary {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .panel {
+        padding: 26px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 18px 50px rgba(40, 64, 77, 0.1);
+      }
+
+      .price {
+        display: block;
+        margin: 8px 0 14px;
+        color: var(--accent);
+        font-size: clamp(3rem, 7vw, 5rem);
+        font-weight: 900;
+        line-height: 1;
+      }
+
+      .checklist {
+        display: grid;
+        gap: 10px;
+        margin: 18px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .checklist li {
+        padding: 11px 12px;
+        border-radius: 6px;
+        background: #f1eee7;
+      }
+
+      .band {
+        padding-block: clamp(56px, 7vw, 92px);
+        background: var(--steel);
+        color: #fff;
+      }
+
+      .band .lead { color: rgba(255, 255, 255, 0.78); }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 28px;
+      }
+
+      .tile {
+        min-height: 230px;
+        padding: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .tile p { color: rgba(255, 255, 255, 0.74); }
+
+      .section { padding-block: clamp(56px, 7vw, 92px); }
+
+      .proof-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 28px;
+      }
+
+      .proof {
+        padding: 22px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .proof p { color: var(--muted); }
+
+      footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding-block: 24px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+      }
+
+      @media (max-width: 880px) {
+        header, footer {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero, .grid, .proof-grid {
+          grid-template-columns: 1fr;
+        }
+
+        nav {
+          width: 100%;
+          overflow-x: auto;
+          padding-bottom: 3px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/fast-ai-revenue-systems/">
+        <span class="mark">AI</span>
+        <span>48-Hour AI Workflow Sprint</span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a href="#scope">Scope</a>
+        <a href="#proof">Examples</a>
+        <a href="#start">Start</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Fixed scope, fast delivery</p>
+          <h1>Ship one useful workflow this week</h1>
+          <p class="lead">
+            A compact sprint for agencies, founders, and operators who need one
+            workflow turned into a working AI-assisted tool, quote flow, intake flow,
+            mini-dashboard, or handoff automation.
+          </p>
+          <div class="actions">
+            <a class="btn primary" href="mailto:nanznakul@gmail.com?subject=AI%20Workflow%20Sprint">Request sprint</a>
+            <a class="btn" href="/fast-ai-revenue-systems/mini-store-kit/">View sample demo</a>
+          </div>
+        </div>
+        <aside class="panel" id="start">
+          <span>Fixed pilot</span>
+          <strong class="price">$1,250</strong>
+          <p>One workflow, first working version, one revision pass, and handoff guide. Third-party tools, paid hosting, SMS, WhatsApp API, or gateway fees are separate only if approved.</p>
+          <ul class="checklist">
+            <li>48-hour first build after inputs</li>
+            <li>Web app, spreadsheet automation, script, or dashboard</li>
+            <li>Payment by Stripe, PayPal, Upwork Direct Contract, bank transfer, or mutually agreed route</li>
+          </ul>
+        </aside>
+      </section>
+
+      <section class="band" id="scope">
+        <p class="eyebrow">Good sprint candidates</p>
+        <h2>Small workflows with expensive friction</h2>
+        <p class="lead">The sprint works best when the problem is clear, repetitive, and currently handled by calls, inboxes, forms, spreadsheets, or manual copy/paste.</p>
+        <div class="grid">
+          <article class="tile">
+            <h3>Lead Intake</h3>
+            <p>Form, routing rules, enrichment fields, summary view, and next-action queue.</p>
+          </article>
+          <article class="tile">
+            <h3>Quote Flow</h3>
+            <p>Customer-facing request page, structured data capture, team queue, and payment-ready handoff.</p>
+          </article>
+          <article class="tile">
+            <h3>Ops Dashboard</h3>
+            <p>Internal dashboard or script for repetitive triage, reporting, review, or status updates.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="proof">
+        <p class="eyebrow">Proof of work</p>
+        <h2>Sample systems</h2>
+        <div class="proof-grid">
+          <article class="proof">
+            <h3>Mini-store and quote queue</h3>
+            <p>A shareable product catalog, quote request flow, and team-side order queue.</p>
+            <a class="btn" href="/fast-ai-revenue-systems/mini-store-kit/">Open demo</a>
+          </article>
+          <article class="proof">
+            <h3>Service offer system</h3>
+            <p>A fixed-scope service page with pilot menu and simple inbound request path.</p>
+            <a class="btn" href="/fast-ai-revenue-systems/">Open demo</a>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>48-Hour AI Workflow Sprint</span>
+      <span>One useful workflow, shipped fast.</span>
+    </footer>
+  </body>
+</html>
