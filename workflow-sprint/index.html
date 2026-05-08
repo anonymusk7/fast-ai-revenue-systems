@@ -158,6 +158,17 @@
         background: #f1eee7;
       }
 
+      .audit {
+        margin-top: 18px;
+        padding-top: 16px;
+        border-top: 1px solid var(--line);
+      }
+
+      .audit strong {
+        color: var(--steel);
+        font-size: 1.2rem;
+      }
+
       .band {
         padding-block: clamp(56px, 7vw, 92px);
         background: var(--steel);
@@ -168,7 +179,7 @@
 
       .grid {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 16px;
         margin-top: 28px;
       }
@@ -208,6 +219,12 @@
         padding-block: 24px;
         border-top: 1px solid var(--line);
         color: var(--muted);
+      }
+
+      @media (max-width: 1120px) {
+        .grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
       }
 
       @media (max-width: 880px) {
@@ -265,6 +282,10 @@
             <li>Web app, spreadsheet automation, script, or dashboard</li>
             <li>Payment by Stripe, PayPal, Upwork Direct Contract, bank transfer, or mutually agreed route</li>
           </ul>
+          <div class="audit">
+            <strong>$299 workflow audit</strong>
+            <p>Lower-risk first step: one existing workflow or spec reviewed, a repair/build plan, risk notes, and a fixed sprint quote. Credited toward the $1,250 sprint if started within 7 days.</p>
+          </div>
         </aside>
       </section>
 
@@ -284,6 +305,10 @@
           <article class="tile">
             <h3>Ops Dashboard</h3>
             <p>Internal dashboard or script for repetitive triage, reporting, review, or status updates.</p>
+          </article>
+          <article class="tile">
+            <h3>Workflow Audit</h3>
+            <p>One brittle scenario, manual process, or automation spec turned into a clear build plan with risks and next steps.</p>
           </article>
         </div>
       </section>
