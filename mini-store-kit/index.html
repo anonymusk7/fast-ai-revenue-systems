@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>InstaOrder Mini - Catalog And Quote Flow Demo</title>
+    <meta name="description" content="A sample mini-store and order capture flow for product sellers.">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="InstaOrder Mini demo home">
+        <span class="brand-mark">IO</span>
+        <span>
+          <strong>InstaOrder Mini</strong>
+          <small>Catalog and quote flow demo</small>
+        </span>
+      </a>
+      <nav aria-label="Demo navigation">
+        <a href="#catalog">Catalog</a>
+        <a href="#orders">Order flow</a>
+        <a href="#pilot">Pilot</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <img src="mini-store-hero.png" alt="" class="hero-img">
+        <div class="hero-overlay"></div>
+        <div class="hero-copy">
+          <p class="eyebrow">Sample products and workflow</p>
+          <h1>A clean order link for repeat buyers</h1>
+          <p>
+            Customers browse common products, request quotes with the details your
+            team needs, and staff get a structured queue instead of scattered calls
+            and message threads.
+          </p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#catalog">View catalog</a>
+            <a class="btn secondary" href="#orders">See order queue</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="strip" aria-label="Key outcomes">
+        <div>
+          <strong>One shareable link</strong>
+          <span>Works from WhatsApp, Instagram bio, Google Business, SMS, or email</span>
+        </div>
+        <div>
+          <strong>Structured enquiries</strong>
+          <span>Product, quantity, delivery area, invoice need, and callback time</span>
+        </div>
+        <div>
+          <strong>Payment-ready</strong>
+          <span>UPI, bank transfer, payment links, or gateway handoff can be added</span>
+        </div>
+      </section>
+
+      <section class="section intro" id="catalog">
+        <div class="section-head">
+          <p class="eyebrow">Sample catalog</p>
+          <h2>A product page built for quick buying intent</h2>
+        </div>
+        <div class="catalog-grid">
+          <article class="product-card">
+            <span class="tag">Repeat order</span>
+            <h3>Popular item bundle</h3>
+            <p>For frequently requested products where buyers know what they need.</p>
+            <button data-product="Popular item bundle">Add to quote</button>
+          </article>
+          <article class="product-card">
+            <span class="tag">Bulk</span>
+            <h3>Bulk quantity enquiry</h3>
+            <p>Captures quantity, delivery area, invoice requirement, and urgency.</p>
+            <button data-product="Bulk quantity enquiry">Add to quote</button>
+          </article>
+          <article class="product-card">
+            <span class="tag">Custom</span>
+            <h3>Custom order request</h3>
+            <p>Lets buyers describe a need without losing details in a chat thread.</p>
+            <button data-product="Custom order request">Add to quote</button>
+          </article>
+          <article class="product-card">
+            <span class="tag">Service</span>
+            <h3>Repair or support request</h3>
+            <p>Collect model, issue, urgency, and pickup/drop preference.</p>
+            <button data-product="Repair or support request">Add to quote</button>
+          </article>
+          <article class="product-card">
+            <span class="tag">Seasonal</span>
+            <h3>Limited stock item</h3>
+            <p>Useful for seasonal, fast-moving, or frequently asked products.</p>
+            <button data-product="Limited stock item">Add to quote</button>
+          </article>
+          <article class="product-card">
+            <span class="tag">Callback</span>
+            <h3>Need help choosing</h3>
+            <p>Creates a callback request with enough context to make the call useful.</p>
+            <button data-product="Need help choosing">Add to quote</button>
+          </article>
+        </div>
+      </section>
+
+      <section class="section order-section" id="orders">
+        <div class="order-panel">
+          <div class="section-head compact">
+            <p class="eyebrow">Customer side</p>
+            <h2>Quote request</h2>
+          </div>
+          <form id="quote-form">
+            <label>
+              Selected items
+              <textarea id="selected-items" rows="4" placeholder="Add items from the catalog"></textarea>
+            </label>
+            <div class="form-row">
+              <label>
+                Quantity / notes
+                <input id="quantity" type="text" value="Need 20 pieces, delivery this week">
+              </label>
+              <label>
+                Callback time
+                <select id="callback">
+                  <option>Today before 6 PM</option>
+                  <option>Tomorrow morning</option>
+                  <option>Send price by email</option>
+                </select>
+              </label>
+            </div>
+            <label class="check">
+              <input id="gst" type="checkbox" checked>
+              GST invoice required
+            </label>
+            <button class="btn primary submit" type="submit">Create sample order</button>
+          </form>
+        </div>
+
+        <div class="order-panel queue">
+          <div class="section-head compact">
+            <p class="eyebrow">Team side</p>
+            <h2>Order queue</h2>
+          </div>
+          <div class="queue-list" id="queue-list">
+            <article>
+              <strong>New quote request</strong>
+              <span>Popular item bundle x 20 - delivery this week - GST invoice</span>
+              <small>Suggested next step: confirm stock, price, and delivery slot.</small>
+            </article>
+            <article>
+              <strong>Support request</strong>
+              <span>Repair or support request - callback needed</span>
+              <small>Suggested next step: ask for product photo and issue details.</small>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section pilot" id="pilot">
+        <div class="pilot-copy">
+          <p class="eyebrow">Fixed pilot</p>
+          <h2>48-hour working version for your business</h2>
+          <p>
+            The pilot includes your top products/categories, quote form, simple
+            order queue, free-hosting launch, and handoff guide.
+          </p>
+        </div>
+        <div class="price-box">
+          <span>Fixed pilot</span>
+          <strong>₹1,15,000</strong>
+          <p>Includes setup, one revision pass, and handoff. Gateway, WhatsApp API, SMS, domain, or paid hosting costs are separate only if approved.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>InstaOrder Mini demo.</span>
+      <span>No real orders are submitted from this page.</span>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
