@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fast AI Revenue Systems</title>
+    <meta name="description" content="48-hour mini-stores, quote flows, and AI-assisted workflow systems for small businesses.">
+    <style>
+      :root {
+        --ink: #151515;
+        --muted: #5c6268;
+        --paper: #fbfaf7;
+        --panel: #ffffff;
+        --line: #ddd6cc;
+        --accent: #b72a21;
+        --steel: #28404d;
+        --sage: #dce8df;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      a { color: inherit; text-decoration: none; }
+
+      header, section, footer {
+        padding-inline: clamp(18px, 4vw, 56px);
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 72px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 850;
+      }
+
+      .mark {
+        display: grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 6px;
+        background: var(--steel);
+        color: #fff;
+      }
+
+      nav {
+        display: flex;
+        gap: 18px;
+        color: var(--muted);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+        gap: clamp(28px, 6vw, 76px);
+        align-items: center;
+        min-height: calc(100svh - 72px);
+        padding-block: clamp(54px, 7vw, 96px);
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        color: var(--accent);
+        font-size: 0.78rem;
+        font-weight: 850;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      h1, h2, h3, p { margin-top: 0; }
+
+      h1 {
+        max-width: 12ch;
+        margin-bottom: 18px;
+        font-size: clamp(3.1rem, 7vw, 6.8rem);
+        line-height: 0.95;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin-bottom: 12px;
+        font-size: clamp(2rem, 4vw, 3.4rem);
+        line-height: 1.04;
+        letter-spacing: 0;
+      }
+
+      .lead {
+        max-width: 680px;
+        color: var(--muted);
+        font-size: 1.16rem;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 12px 16px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-weight: 850;
+      }
+
+      .btn.primary {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .proof {
+        display: grid;
+        gap: 14px;
+        padding: 20px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 18px 50px rgba(40, 64, 77, 0.1);
+      }
+
+      .proof-row {
+        padding: 18px;
+        border-radius: 6px;
+        background: #f2efe9;
+      }
+
+      .proof-row strong, .proof-row span {
+        display: block;
+      }
+
+      .proof-row span {
+        margin-top: 4px;
+        color: var(--muted);
+      }
+
+      .band {
+        padding-block: clamp(56px, 7vw, 92px);
+        background: var(--steel);
+        color: #fff;
+      }
+
+      .band .lead {
+        color: rgba(255, 255, 255, 0.78);
+      }
+
+      .offers {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 30px;
+      }
+
+      .offer {
+        display: grid;
+        gap: 12px;
+        min-height: 280px;
+        padding: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .offer p {
+        color: rgba(255, 255, 255, 0.74);
+      }
+
+      .offer strong {
+        align-self: end;
+        color: #ffb2a8;
+        font-size: 1.4rem;
+      }
+
+      .section {
+        padding-block: clamp(56px, 7vw, 92px);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 28px;
+      }
+
+      .tile {
+        padding: 22px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .tile p {
+        color: var(--muted);
+      }
+
+      footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding-block: 24px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+      }
+
+      @media (max-width: 860px) {
+        header, footer {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero,
+        .offers,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        nav {
+          overflow-x: auto;
+          width: 100%;
+          padding-bottom: 3px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/">
+        <span class="mark">AI</span>
+        <span>Fast AI Revenue Systems</span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a href="#offers">Offers</a>
+        <a href="/power-tools/">Demo</a>
+        <a href="#next">Next step</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Built in 48 hours</p>
+          <h1>Useful sales systems, shipped fast</h1>
+          <p class="lead">
+            Mini-stores, quote flows, payment-ready order capture, proposal flows,
+            and AI-assisted operations tools for small businesses that need fewer
+            manual handoffs.
+          </p>
+          <div class="actions">
+            <a class="btn primary" href="mailto:nanznakul@gmail.com?subject=48-hour%20AI%20system%20pilot">Request a pilot</a>
+            <a class="btn" href="/power-tools/">View sample demo</a>
+          </div>
+        </div>
+        <aside class="proof" aria-label="System examples">
+          <div class="proof-row">
+            <strong>Mini-store and quote capture</strong>
+            <span>Catalog, structured enquiry form, staff queue, payment handoff.</span>
+          </div>
+          <div class="proof-row">
+            <strong>Proposal and invoice flow</strong>
+            <span>Scope builder, approval handoff, reminder automation.</span>
+          </div>
+          <div class="proof-row">
+            <strong>AI workflow assistant</strong>
+            <span>Simple tools for intake sorting, summaries, and next actions.</span>
+          </div>
+        </aside>
+      </section>
+
+      <section class="band" id="offers">
+        <p class="eyebrow">Fixed pilot menu</p>
+        <h2>Three ways to start</h2>
+        <p class="lead">The scope is intentionally tight: one useful workflow, one launchable version, one handoff guide.</p>
+        <div class="offers">
+          <article class="offer">
+            <h3>InstaOrder Mini</h3>
+            <p>Shareable catalog, quote form, staff queue, and payment-link-ready handoff for businesses selling repeatable products.</p>
+            <strong>₹1,15,000</strong>
+          </article>
+          <article class="offer">
+            <h3>ProposalFlow</h3>
+            <p>Proposal intake, package builder, client approval page, and invoice/reminder handoff for service firms.</p>
+            <strong>₹1,25,000</strong>
+          </article>
+          <article class="offer">
+            <h3>Ops Autopilot</h3>
+            <p>One repetitive workflow turned into a simple AI-assisted dashboard, script, or spreadsheet automation.</p>
+            <strong>₹1,50,000</strong>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="next">
+        <p class="eyebrow">Fit check</p>
+        <h2>Best for messy but repeatable work</h2>
+        <div class="grid">
+          <article class="tile">
+            <h3>Good fits</h3>
+            <p>Local distributors, agencies, clinics, service providers, education teams, recruiters, consultants, and back-office operators.</p>
+          </article>
+          <article class="tile">
+            <h3>What to send</h3>
+            <p>A short description of the workflow, sample products or fields, and where requests should land: email, spreadsheet, WhatsApp, or dashboard.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Fast AI Revenue Systems</span>
+      <span>Built for fixed-scope pilots and practical handoff.</span>
+    </footer>
+  </body>
+</html>

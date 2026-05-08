@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Power Tools & Tackles - InstaOrder Mini Demo</title>
+    <meta name="description" content="A sample mini-store and order capture demo for Power Tools & Tackles.">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="Power Tools & Tackles demo home">
+        <span class="brand-mark">PT</span>
+        <span>
+          <strong>Power Tools & Tackles</strong>
+          <small>InstaOrder Mini demo</small>
+        </span>
+      </a>
+      <nav aria-label="Demo navigation">
+        <a href="#catalog">Catalog</a>
+        <a href="#orders">Order flow</a>
+        <a href="#pilot">Pilot</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <img src="power-tools-hero.png" alt="" class="hero-img">
+        <div class="hero-overlay"></div>
+        <div class="hero-copy">
+          <p class="eyebrow">Demo only - sample products and workflow</p>
+          <h1>A fast mini-store for repeat tool buyers</h1>
+          <p>
+            Customers browse common items, send a clean order request, and your team
+            gets a structured queue instead of scattered calls and message threads.
+          </p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#catalog">View catalog</a>
+            <a class="btn secondary" href="#orders">See order queue</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="strip" aria-label="Key outcomes">
+        <div>
+          <strong>Catalog link</strong>
+          <span>Send by WhatsApp, SMS, email, or Instagram bio</span>
+        </div>
+        <div>
+          <strong>Cleaner orders</strong>
+          <span>Quantity, delivery area, GST need, and callback time captured</span>
+        </div>
+        <div>
+          <strong>Payment-ready</strong>
+          <span>Works with UPI, bank transfer, or payment links after approval</span>
+        </div>
+      </section>
+
+      <section class="section intro" id="catalog">
+        <div class="section-head">
+          <p class="eyebrow">Sample catalog</p>
+          <h2>High-intent items in one shareable page</h2>
+        </div>
+        <div class="catalog-grid">
+          <article class="product-card">
+            <span class="tag">Cutting</span>
+            <h3>Abrasive cutting wheel pack</h3>
+            <p>For metal cutting, workshop, fabrication, and maintenance buyers.</p>
+            <button data-product="Abrasive cutting wheel pack">Add to quote</button>
+          </article>
+          <article class="product-card">
+            <span class="tag">Safety</span>
+            <h3>Industrial safety helmet</h3>
+            <p>Bulk order friendly item for contractors and site supervisors.</p>
+            <button data-product="Industrial safety helmet">Add to quote</button>
+          </article>
+          <article class="product-card">
+            <span class="tag">Welding</span>
+            <h3>Welding shield and gloves set</h3>
+            <p>Simple bundle for fabrication teams and recurring shop orders.</p>
+            <button data-product="Welding shield and gloves set">Add to quote</button>
+          </article>
+          <article class="product-card">
+            <span class="tag">Lifting</span>
+            <h3>Chain pulley block enquiry</h3>
+            <p>Quote-first flow with capacity, lift height, and site details.</p>
+            <button data-product="Chain pulley block enquiry">Add to quote</button>
+          </article>
+          <article class="product-card">
+            <span class="tag">Drilling</span>
+            <h3>Drill bit and accessory kit</h3>
+            <p>Repeatable order capture for common consumables and accessories.</p>
+            <button data-product="Drill bit and accessory kit">Add to quote</button>
+          </article>
+          <article class="product-card">
+            <span class="tag">Tools</span>
+            <h3>Power tool service request</h3>
+            <p>Collect tool model, issue, urgency, and pickup preference cleanly.</p>
+            <button data-product="Power tool service request">Add to quote</button>
+          </article>
+        </div>
+      </section>
+
+      <section class="section order-section" id="orders">
+        <div class="order-panel">
+          <div class="section-head compact">
+            <p class="eyebrow">Customer side</p>
+            <h2>Quote request</h2>
+          </div>
+          <form id="quote-form">
+            <label>
+              Selected items
+              <textarea id="selected-items" rows="4" placeholder="Add items from the catalog"></textarea>
+            </label>
+            <div class="form-row">
+              <label>
+                Quantity / notes
+                <input id="quantity" type="text" value="Need 20 pieces, delivery near City Market">
+              </label>
+              <label>
+                Callback time
+                <select id="callback">
+                  <option>Today before 6 PM</option>
+                  <option>Tomorrow morning</option>
+                  <option>Send price by email</option>
+                </select>
+              </label>
+            </div>
+            <label class="check">
+              <input id="gst" type="checkbox" checked>
+              GST invoice required
+            </label>
+            <button class="btn primary submit" type="submit">Create sample order</button>
+          </form>
+        </div>
+
+        <div class="order-panel queue">
+          <div class="section-head compact">
+            <p class="eyebrow">Team side</p>
+            <h2>Order queue</h2>
+          </div>
+          <div class="queue-list" id="queue-list">
+            <article>
+              <strong>New quote request</strong>
+              <span>Cutting wheels x 20 - City Market - GST invoice</span>
+              <small>Suggested next step: confirm stock, price, and delivery slot.</small>
+            </article>
+            <article>
+              <strong>Service request</strong>
+              <span>Power tool repair - pickup requested</span>
+              <small>Suggested next step: ask for model photo and issue details.</small>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section pilot" id="pilot">
+        <div class="pilot-copy">
+          <p class="eyebrow">Implementation pilot</p>
+          <h2>48-hour working version for Power Tools & Tackles</h2>
+          <p>
+            I can turn this demo into a working mini-store with your top categories,
+            quote form, team order queue, and handoff instructions.
+          </p>
+        </div>
+        <div class="price-box">
+          <span>Fixed pilot</span>
+          <strong>₹1,15,000</strong>
+          <p>Includes setup, one revision pass, and a handoff guide. Payment gateway or hosting fees, if any, are billed at cost.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Prepared as a sample demo for Power Tools & Tackles.</span>
+      <span>No real orders are submitted from this page.</span>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
