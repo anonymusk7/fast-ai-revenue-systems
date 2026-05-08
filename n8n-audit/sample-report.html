@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sample n8n Audit Report</title>
+    <meta name="description" content="Sample deliverable for a fixed n8n workflow risk audit.">
+    <link rel="icon" href="data:,">
+    <style>
+      :root {
+        --ink: #121417;
+        --muted: #59636f;
+        --paper: #f7f5ef;
+        --panel: #ffffff;
+        --line: #d8d2c8;
+        --red: #b72a21;
+        --green: #19624d;
+        --gold: #a76b12;
+        --blue: #294c77;
+        --soft: #eef3f1;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      a { color: inherit; text-decoration: none; }
+
+      header,
+      section,
+      footer {
+        padding-inline: clamp(16px, 4vw, 56px);
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 68px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 850;
+      }
+
+      .mark {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 6px;
+        background: var(--blue);
+        color: #fff;
+      }
+
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        color: var(--muted);
+        font-weight: 760;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(320px, 0.82fr);
+        gap: clamp(24px, 5vw, 64px);
+        align-items: center;
+        padding-block: clamp(42px, 7vw, 88px);
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 12ch;
+        margin-bottom: 16px;
+        font-size: clamp(2.7rem, 5.6vw, 5.8rem);
+        line-height: 0.98;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin-bottom: 10px;
+        font-size: clamp(1.65rem, 3vw, 2.7rem);
+        line-height: 1.07;
+        letter-spacing: 0;
+      }
+
+      h3 {
+        margin-bottom: 5px;
+        font-size: 1rem;
+      }
+
+      .eyebrow {
+        margin-bottom: 10px;
+        color: var(--red);
+        font-size: 0.78rem;
+        font-weight: 850;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      .lead {
+        max-width: 650px;
+        color: var(--muted);
+        font-size: 1.09rem;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 10px 13px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--panel);
+        font-weight: 850;
+      }
+
+      .btn.primary {
+        border-color: var(--red);
+        background: var(--red);
+        color: #fff;
+      }
+
+      .snapshot {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 18px 50px rgba(18, 20, 23, 0.08);
+      }
+
+      .score-band {
+        display: grid;
+        grid-template-columns: 130px 1fr;
+        gap: 18px;
+        align-items: center;
+        padding: 22px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .score {
+        display: grid;
+        place-items: center;
+        width: 112px;
+        height: 112px;
+        border: 8px solid var(--red);
+        border-radius: 50%;
+        color: var(--red);
+        font-size: 2.7rem;
+        font-weight: 900;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1px;
+        background: var(--line);
+      }
+
+      .metric {
+        min-height: 92px;
+        padding: 16px;
+        background: #f9faf7;
+      }
+
+      .metric strong,
+      .metric span {
+        display: block;
+      }
+
+      .metric strong {
+        font-size: 1.55rem;
+      }
+
+      .metric span {
+        color: var(--muted);
+        font-size: 0.88rem;
+        font-weight: 760;
+      }
+
+      .section {
+        padding-block: clamp(42px, 6vw, 78px);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 24px;
+      }
+
+      .finding,
+      .deliverable,
+      .fix {
+        display: grid;
+        gap: 10px;
+        min-height: 172px;
+        padding: 20px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .finding p,
+      .deliverable p,
+      .fix p {
+        color: var(--muted);
+      }
+
+      .badge {
+        justify-self: start;
+        padding: 5px 8px;
+        border-radius: 5px;
+        color: #fff;
+        font-size: 0.74rem;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .badge.high { background: var(--red); }
+      .badge.med { background: var(--gold); }
+      .badge.low { background: var(--blue); }
+      .badge.done { background: var(--green); }
+
+      .flow {
+        position: relative;
+        min-height: 230px;
+        margin-top: 24px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
+        background:
+          linear-gradient(90deg, rgba(41, 76, 119, 0.08) 1px, transparent 1px),
+          linear-gradient(0deg, rgba(41, 76, 119, 0.08) 1px, transparent 1px),
+          #fff;
+        background-size: 30px 30px;
+      }
+
+      .node {
+        position: absolute;
+        display: grid;
+        place-items: center;
+        width: clamp(92px, 12vw, 128px);
+        min-height: 54px;
+        padding: 8px;
+        border: 2px solid var(--blue);
+        border-radius: 7px;
+        background: #fff;
+        color: var(--blue);
+        font-size: 0.82rem;
+        font-weight: 850;
+        text-align: center;
+        box-shadow: 0 8px 20px rgba(41, 76, 119, 0.15);
+      }
+
+      .node.warn { border-color: var(--gold); color: var(--gold); }
+      .node.fail { border-color: var(--red); color: var(--red); }
+      .node.pass { border-color: var(--green); color: var(--green); }
+
+      .n1 { left: 7%; top: 40px; }
+      .n2 { left: 30%; top: 122px; }
+      .n3 { left: 53%; top: 42px; }
+      .n4 { right: 7%; top: 126px; }
+
+      .line {
+        position: absolute;
+        height: 2px;
+        background: var(--blue);
+        opacity: 0.45;
+        transform-origin: left center;
+      }
+
+      .l1 { left: 20%; top: 95px; width: 16%; transform: rotate(28deg); }
+      .l2 { left: 43%; top: 138px; width: 16%; transform: rotate(-28deg); }
+      .l3 { left: 66%; top: 94px; width: 16%; transform: rotate(28deg); }
+
+      .band {
+        background: var(--blue);
+        color: #fff;
+      }
+
+      .band .lead {
+        color: rgba(255, 255, 255, 0.78);
+      }
+
+      footer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 12px;
+        padding-block: 24px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+      }
+
+      @media (max-width: 860px) {
+        header {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 12px;
+          padding-block: 16px;
+        }
+
+        .hero,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .score-band {
+          grid-template-columns: 1fr;
+        }
+
+        .metrics {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .node {
+          width: 82px;
+          font-size: 0.72rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="./">
+        <span class="mark">n8n</span>
+        <span>Audit Sample</span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a href="./">Scanner</a>
+        <a href="../workflow-sprint/">Audit Sprint</a>
+        <a href="mailto:nanznakul@gmail.com?subject=n8n%20workflow%20audit">Email</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Sample deliverable</p>
+        <h1>What the $299 audit returns</h1>
+        <p class="lead">A short, production-focused risk report for one exported n8n workflow: score, high-risk nodes, concrete fixes, and a fixed remediation path.</p>
+        <div class="actions">
+          <a class="btn primary" href="mailto:nanznakul@gmail.com?subject=n8n%20workflow%20audit&body=Please%20review%20one%20n8n%20workflow%20for%20a%20fixed%20%24299%20audit.">Request audit</a>
+          <a class="btn" href="./">Run the scanner</a>
+        </div>
+      </div>
+
+      <aside class="snapshot" aria-label="Sample score">
+        <div class="score-band">
+          <div class="score">42</div>
+          <div>
+            <p class="eyebrow">High risk sample</p>
+            <h2>Lead intake to CRM</h2>
+            <p class="lead">Webhook intake, enrichment API call, AI classification, CRM write, and email notification.</p>
+          </div>
+        </div>
+        <div class="metrics">
+          <div class="metric">
+            <strong>9</strong>
+            <span>nodes reviewed</span>
+          </div>
+          <div class="metric">
+            <strong>6</strong>
+            <span>findings</span>
+          </div>
+          <div class="metric">
+            <strong>3</strong>
+            <span>priority fixes</span>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section">
+      <p class="eyebrow">Risk map</p>
+      <h2>Fast visual read of the weak points</h2>
+      <p class="lead">The audit separates structural risk from business-rule risk so the first fix is obvious.</p>
+      <div class="flow" aria-label="Sample workflow map">
+        <span class="line l1"></span>
+        <span class="line l2"></span>
+        <span class="line l3"></span>
+        <span class="node fail n1">Public webhook</span>
+        <span class="node warn n2">Normalize lead</span>
+        <span class="node fail n3">Enrichment API</span>
+        <span class="node pass n4">CRM update</span>
+      </div>
+    </section>
+
+    <section class="section band">
+      <p class="eyebrow">Findings</p>
+      <h2>Prioritized, not encyclopedic</h2>
+      <p class="lead">The paid report stays short enough to act on the same day.</p>
+      <div class="grid">
+        <article class="finding">
+          <span class="badge high">High</span>
+          <h3>Webhook accepts unauthenticated requests</h3>
+          <p>The exported webhook node has no authentication mode. Add header auth or signed requests before the workflow touches CRM or customer messaging.</p>
+        </article>
+        <article class="finding">
+          <span class="badge high">High</span>
+          <h3>HTTP enrichment has no retry policy</h3>
+          <p>The external enrichment API can fail silently or stall the chain. Add retry-on-fail, timeout, and an explicit error branch with preserved lead data.</p>
+        </article>
+        <article class="finding">
+          <span class="badge med">Medium</span>
+          <h3>AI output writes directly to CRM</h3>
+          <p>Classification output should pass through a deterministic validation gate before any CRM field update or outbound notification.</p>
+        </article>
+        <article class="finding">
+          <span class="badge low">Low</span>
+          <h3>No handoff notes for the owner</h3>
+          <p>Add notes for credentials, expected input schema, failure handling, and the manual recovery path.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <p class="eyebrow">What you get</p>
+      <h2>Fixed deliverables</h2>
+      <div class="grid">
+        <article class="deliverable">
+          <span class="badge done">Audit</span>
+          <h3>One concise report</h3>
+          <p>Score, findings, affected nodes, why each item matters, and a recommended order of operations.</p>
+        </article>
+        <article class="deliverable">
+          <span class="badge done">Remediation</span>
+          <h3>Clear fixed-scope quote</h3>
+          <p>The $299 audit is credited toward a $1,250 remediation slice when the workflow needs implementation help.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <p class="eyebrow">Sample remediation slice</p>
+      <h2>Three changes before production</h2>
+      <div class="grid">
+        <article class="fix">
+          <span class="badge high">1</span>
+          <h3>Protect entry</h3>
+          <p>Add signed webhook authentication, schema validation, and clear rejection messages for malformed input.</p>
+        </article>
+        <article class="fix">
+          <span class="badge high">2</span>
+          <h3>Harden external calls</h3>
+          <p>Add retry/backoff, timeout, structured failure logging, and a recovery branch that preserves the lead.</p>
+        </article>
+        <article class="fix">
+          <span class="badge med">3</span>
+          <h3>Gate AI decisions</h3>
+          <p>Validate model output before CRM writes, then route uncertain classifications to human review.</p>
+        </article>
+        <article class="fix">
+          <span class="badge done">4</span>
+          <h3>Hand off cleanly</h3>
+          <p>Document inputs, credentials, escalation steps, and owner responsibilities in the workflow notes.</p>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <span>Fast AI Revenue Systems</span>
+      <span>Sample only. Live workflows still need environment review.</span>
+    </footer>
+  </body>
+</html>
