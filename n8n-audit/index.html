@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>n8n Workflow Risk Scanner</title>
+    <meta name="description" content="Browser-side n8n workflow risk scanner for production readiness checks.">
+    <link rel="icon" href="data:,">
+    <style>
+      :root {
+        --ink: #121417;
+        --muted: #5c6570;
+        --paper: #f7f5ef;
+        --panel: #ffffff;
+        --line: #d8d2c8;
+        --red: #b72a21;
+        --green: #19624d;
+        --gold: #a76b12;
+        --blue: #294c77;
+        --soft: #eef3f1;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      a { color: inherit; text-decoration: none; }
+
+      header,
+      main,
+      footer {
+        padding-inline: clamp(16px, 4vw, 52px);
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 68px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 850;
+      }
+
+      .mark {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 6px;
+        background: var(--blue);
+        color: #fff;
+      }
+
+      nav {
+        display: flex;
+        gap: 18px;
+        color: var(--muted);
+        font-weight: 720;
+      }
+
+      main {
+        display: grid;
+        grid-template-columns: minmax(340px, 0.9fr) minmax(0, 1.1fr);
+        gap: clamp(22px, 4vw, 44px);
+        min-height: calc(100svh - 126px);
+        padding-block: clamp(24px, 4vw, 48px);
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 13ch;
+        margin-bottom: 14px;
+        font-size: clamp(2.55rem, 5vw, 5.35rem);
+        line-height: 0.98;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin-bottom: 8px;
+        font-size: clamp(1.5rem, 2.6vw, 2.4rem);
+        line-height: 1.05;
+        letter-spacing: 0;
+      }
+
+      h3 {
+        margin-bottom: 6px;
+        font-size: 1rem;
+      }
+
+      .eyebrow {
+        margin-bottom: 10px;
+        color: var(--red);
+        font-size: 0.78rem;
+        font-weight: 850;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      .lead {
+        max-width: 640px;
+        color: var(--muted);
+        font-size: 1.08rem;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 18px 48px rgba(18, 20, 23, 0.08);
+      }
+
+      .scanner {
+        display: grid;
+        gap: 16px;
+        padding: clamp(16px, 3vw, 22px);
+      }
+
+      .toolbar,
+      .actions,
+      .score-row,
+      .summary-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .toolbar {
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      label {
+        color: var(--muted);
+        font-size: 0.88rem;
+        font-weight: 760;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 330px;
+        resize: vertical;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #111418;
+        color: #ecf1f4;
+        font: 0.88rem/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+
+      input[type="file"] {
+        max-width: 100%;
+        padding: 9px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--soft);
+        color: var(--ink);
+      }
+
+      button,
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 10px 13px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--panel);
+        color: var(--ink);
+        font: inherit;
+        font-weight: 850;
+        cursor: pointer;
+      }
+
+      button.primary,
+      .btn.primary {
+        border-color: var(--red);
+        background: var(--red);
+        color: #fff;
+      }
+
+      .btn.green {
+        border-color: var(--green);
+        background: var(--green);
+        color: #fff;
+      }
+
+      .visual {
+        position: relative;
+        min-height: 210px;
+        margin-top: 24px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
+        background:
+          linear-gradient(90deg, rgba(41, 76, 119, 0.08) 1px, transparent 1px),
+          linear-gradient(0deg, rgba(41, 76, 119, 0.08) 1px, transparent 1px),
+          #fff;
+        background-size: 32px 32px;
+      }
+
+      .node {
+        position: absolute;
+        display: grid;
+        place-items: center;
+        width: clamp(86px, 12vw, 118px);
+        min-height: 52px;
+        padding: 8px;
+        border: 2px solid var(--blue);
+        border-radius: 7px;
+        background: #fff;
+        color: var(--blue);
+        font-size: 0.82rem;
+        font-weight: 850;
+        text-align: center;
+        box-shadow: 0 8px 20px rgba(41, 76, 119, 0.15);
+      }
+
+      .node.warn { border-color: var(--gold); color: var(--gold); }
+      .node.fail { border-color: var(--red); color: var(--red); }
+      .node.pass { border-color: var(--green); color: var(--green); }
+
+      .n1 { left: 8%; top: 36px; }
+      .n2 { left: 38%; top: 76px; }
+      .n3 { right: 8%; top: 34px; }
+      .n4 { left: 18%; bottom: 24px; }
+      .n5 { right: 19%; bottom: 20px; }
+
+      .line {
+        position: absolute;
+        height: 2px;
+        transform-origin: left center;
+        background: var(--line);
+      }
+
+      .l1 { left: 26%; top: 70px; width: 18%; transform: rotate(14deg); }
+      .l2 { left: 56%; top: 90px; width: 22%; transform: rotate(-12deg); }
+      .l3 { left: 28%; bottom: 72px; width: 30%; transform: rotate(-18deg); }
+      .l4 { right: 26%; bottom: 62px; width: 18%; transform: rotate(12deg); }
+
+      .report {
+        display: grid;
+        align-content: start;
+        gap: 16px;
+        padding: clamp(16px, 3vw, 24px);
+      }
+
+      .score {
+        display: grid;
+        place-items: center;
+        width: 124px;
+        height: 124px;
+        border: 8px solid var(--green);
+        border-radius: 50%;
+        font-size: 2.2rem;
+        font-weight: 900;
+      }
+
+      .score.low { border-color: var(--red); }
+      .score.mid { border-color: var(--gold); }
+
+      .status-copy {
+        min-width: min(100%, 320px);
+        flex: 1;
+      }
+
+      .status-copy p {
+        color: var(--muted);
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .metric {
+        min-height: 92px;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: var(--soft);
+      }
+
+      .metric strong {
+        display: block;
+        font-size: 1.45rem;
+      }
+
+      .metric span {
+        color: var(--muted);
+        font-size: 0.88rem;
+        font-weight: 740;
+      }
+
+      .findings {
+        display: grid;
+        gap: 10px;
+      }
+
+      .finding {
+        display: grid;
+        grid-template-columns: 86px minmax(0, 1fr);
+        gap: 12px;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: #fff;
+      }
+
+      .severity {
+        align-self: start;
+        padding: 4px 7px;
+        border-radius: 5px;
+        background: var(--soft);
+        color: var(--blue);
+        font-size: 0.76rem;
+        font-weight: 900;
+        text-align: center;
+        text-transform: uppercase;
+      }
+
+      .severity.high { background: #ffe5e0; color: var(--red); }
+      .severity.med { background: #fff0d3; color: var(--gold); }
+      .severity.low { background: #e3f4ee; color: var(--green); }
+
+      .finding p {
+        margin-bottom: 0;
+        color: var(--muted);
+      }
+
+      .cta {
+        padding: 16px;
+        border: 1px solid rgba(25, 98, 77, 0.35);
+        border-radius: 8px;
+        background: #e8f3ed;
+      }
+
+      .cta p {
+        color: #315247;
+      }
+
+      footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        min-height: 58px;
+        padding-block: 18px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+      }
+
+      @media (max-width: 980px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+
+        .visual {
+          min-height: 180px;
+        }
+      }
+
+      @media (max-width: 680px) {
+        header,
+        footer {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        nav {
+          overflow-x: auto;
+          width: 100%;
+          padding-bottom: 3px;
+        }
+
+        h1 {
+          max-width: 100%;
+        }
+
+        .summary-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .finding {
+          grid-template-columns: 1fr;
+        }
+
+        .node {
+          width: 82px;
+          font-size: 0.72rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="../">
+        <span class="mark">n8n</span>
+        <span>Workflow Risk Scanner</span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a href="../workflow-sprint/">Audit Sprint</a>
+        <a href="mailto:nanznakul@gmail.com?subject=n8n%20workflow%20audit">Email</a>
+      </nav>
+    </header>
+
+    <main>
+      <section>
+        <p class="eyebrow">Local JSON check</p>
+        <h1>Find weak spots before n8n breaks in production</h1>
+        <p class="lead">Reliability, security, and handoff risks, ranked for a production fix list.</p>
+        <div class="visual" aria-label="Workflow risk map">
+          <span class="line l1"></span>
+          <span class="line l2"></span>
+          <span class="line l3"></span>
+          <span class="line l4"></span>
+          <span class="node pass n1">Trigger</span>
+          <span class="node warn n2">Code</span>
+          <span class="node fail n3">HTTP</span>
+          <span class="node warn n4">Email</span>
+          <span class="node pass n5">Handoff</span>
+        </div>
+      </section>
+
+      <section class="panel scanner" aria-label="Workflow scanner">
+        <div class="toolbar">
+          <label for="workflowInput">Workflow JSON</label>
+          <input id="fileInput" type="file" accept=".json,application/json">
+        </div>
+        <textarea id="workflowInput" spellcheck="false"></textarea>
+        <div class="actions">
+          <button class="primary" id="analyzeBtn" type="button">Analyze workflow</button>
+          <button id="sampleBtn" type="button">Load sample</button>
+          <button id="clearBtn" type="button">Clear</button>
+        </div>
+      </section>
+
+      <section class="panel report" aria-label="Workflow report">
+        <div class="score-row">
+          <div class="score" id="score">--</div>
+          <div class="status-copy">
+            <p class="eyebrow" id="status">Waiting for workflow</p>
+            <h2 id="headline">Production-readiness report</h2>
+            <p id="summary">Paste an exported n8n workflow to generate a prioritized review.</p>
+          </div>
+        </div>
+
+        <div class="summary-grid">
+          <div class="metric">
+            <strong id="nodeCount">0</strong>
+            <span>nodes</span>
+          </div>
+          <div class="metric">
+            <strong id="riskCount">0</strong>
+            <span>findings</span>
+          </div>
+          <div class="metric">
+            <strong id="edgeCount">0</strong>
+            <span>links</span>
+          </div>
+        </div>
+
+        <div class="findings" id="findings"></div>
+
+        <div class="cta">
+          <p><strong>$299 fixed audit.</strong> Credited toward a $1,250 remediation slice for error handling, retries, observability, and handoff docs.</p>
+          <div class="actions">
+            <button class="green" id="copyBtn" type="button">Copy report</button>
+            <a class="btn primary" id="emailBtn" href="mailto:nanznakul@gmail.com?subject=n8n%20workflow%20audit">Request audit</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Fast AI Revenue Systems</span>
+      <span>No workflow data is uploaded by this page.</span>
+    </footer>
+
+    <script>
+      const input = document.querySelector("#workflowInput");
+      const fileInput = document.querySelector("#fileInput");
+      const analyzeBtn = document.querySelector("#analyzeBtn");
+      const sampleBtn = document.querySelector("#sampleBtn");
+      const clearBtn = document.querySelector("#clearBtn");
+      const copyBtn = document.querySelector("#copyBtn");
+      const emailBtn = document.querySelector("#emailBtn");
+      const scoreEl = document.querySelector("#score");
+      const statusEl = document.querySelector("#status");
+      const headlineEl = document.querySelector("#headline");
+      const summaryEl = document.querySelector("#summary");
+      const nodeCountEl = document.querySelector("#nodeCount");
+      const riskCountEl = document.querySelector("#riskCount");
+      const edgeCountEl = document.querySelector("#edgeCount");
+      const findingsEl = document.querySelector("#findings");
+
+      const sampleWorkflow = {
+        name: "Lead intake to CRM",
+        nodes: [
+          { id: "1", name: "Webhook", type: "n8n-nodes-base.webhook", parameters: { httpMethod: "POST", path: "lead-intake" } },
+          { id: "2", name: "Normalize", type: "n8n-nodes-base.code", parameters: { jsCode: "return items.map(item => item);" } },
+          { id: "3", name: "Enrich Lead", type: "n8n-nodes-base.httpRequest", parameters: { method: "POST", url: "https://api.example.com/enrich?api_key=demo" } },
+          { id: "4", name: "Send Email", type: "n8n-nodes-base.emailSend", parameters: { subject: "New lead" } }
+        ],
+        connections: {
+          Webhook: { main: [[{ node: "Normalize", type: "main", index: 0 }]] },
+          Normalize: { main: [[{ node: "Enrich Lead", type: "main", index: 0 }]] },
+          "Enrich Lead": { main: [[{ node: "Send Email", type: "main", index: 0 }]] }
+        },
+        settings: {}
+      };
+
+      let latestReport = "";
+
+      function countEdges(connections) {
+        if (!connections || typeof connections !== "object") return 0;
+        return Object.values(connections).reduce((sum, groups) => {
+          if (!groups || typeof groups !== "object") return sum;
+          return sum + Object.values(groups).flat(2).filter(Boolean).length;
+        }, 0);
+      }
+
+      function textSearch(value, regex) {
+        try {
+          return regex.test(JSON.stringify(value));
+        } catch {
+          return false;
+        }
+      }
+
+      function connectedNodeNames(connections) {
+        const names = new Set();
+        if (!connections || typeof connections !== "object") return names;
+        for (const [source, groups] of Object.entries(connections)) {
+          names.add(source);
+          for (const branch of Object.values(groups || {})) {
+            for (const link of branch.flat(2).filter(Boolean)) {
+              if (link.node) names.add(link.node);
+            }
+          }
+        }
+        return names;
+      }
+
+      function addFinding(findings, severity, title, detail, weight) {
+        findings.push({ severity, title, detail, weight });
+      }
+
+      function analyze(workflow) {
+        const nodes = Array.isArray(workflow) ? workflow : workflow.nodes || [];
+        const settings = workflow.settings || {};
+        const connections = workflow.connections || {};
+        const findings = [];
+        const types = nodes.map((node) => String(node.type || "").toLowerCase());
+        const names = nodes.map((node) => String(node.name || ""));
+        const connected = connectedNodeNames(connections);
+        const httpNodes = nodes.filter((node) => String(node.type || "").toLowerCase().includes("httprequest"));
+        const webhookNodes = nodes.filter((node) => String(node.type || "").toLowerCase().includes("webhook"));
+        const codeNodes = nodes.filter((node) => String(node.type || "").toLowerCase().includes("code") || String(node.type || "").toLowerCase().includes("function"));
+        const aiNodes = nodes.filter((node) => /openai|anthropic|lm|chain|agent|textclassifier|informationextractor/i.test(node.type || node.name || ""));
+        const emailNodes = nodes.filter((node) => /email|gmail|outlook|sendgrid|mailgun|smtp/i.test(node.type || node.name || ""));
+
+        if (!nodes.length) addFinding(findings, "high", "No nodes found", "The JSON did not look like a workflow export with a nodes array.", 35);
+        if (!types.some((type) => /trigger|webhook|cron|schedule|manualtrigger/.test(type))) {
+          addFinding(findings, "med", "Trigger boundary is unclear", "No trigger-like node was detected, so ownership of the workflow entry point may be ambiguous.", 12);
+        }
+        if (!settings.errorWorkflow && !types.some((type) => type.includes("errortrigger"))) {
+          addFinding(findings, "high", "No workflow-level error path", "A production workflow should have an error workflow or explicit failure route for critical branches.", 18);
+        }
+        if (!settings.executionTimeout && nodes.length > 4) {
+          addFinding(findings, "med", "No execution timeout", "Long or multi-step workflows should define a timeout to avoid stuck executions and hidden cost drift.", 8);
+        }
+        if (httpNodes.some((node) => !node.retryOnFail && !node.continueOnFail && !node.onError)) {
+          addFinding(findings, "high", "HTTP requests lack retry/failure policy", "At least one HTTP node appears to run without retry, continue-on-fail, or explicit error behavior.", 16);
+        }
+        if (webhookNodes.some((node) => !node.parameters || !node.parameters.authentication || node.parameters.authentication === "none")) {
+          addFinding(findings, "high", "Webhook authentication risk", "A webhook node appears to accept requests without an authentication mode in the export.", 18);
+        }
+        if (emailNodes.length && !types.some((type) => /wait|splitinbatches|limiter|merge/.test(type))) {
+          addFinding(findings, "med", "Email throughput guard not visible", "Email workflows usually need batching, waits, or a queue so a bad input does not flood recipients.", 10);
+        }
+        if (aiNodes.length && !types.some((type) => /if|switch|filter|compare/.test(type))) {
+          addFinding(findings, "med", "AI output gate not visible", "AI nodes should usually feed a deterministic gate before CRM, email, billing, or customer-facing actions.", 11);
+        }
+        if (codeNodes.length && !textSearch(codeNodes, /try\s*{|catch\s*\(/i)) {
+          addFinding(findings, "med", "Code node has no visible exception handling", "Custom code should catch and annotate failures before passing data downstream.", 9);
+        }
+        if (textSearch(workflow, /(api[_-]?key|secret|token|password)=?[A-Za-z0-9_\-]{6,}/i)) {
+          addFinding(findings, "high", "Possible secret in export", "The JSON contains text shaped like a key, token, secret, or password. Move secrets into n8n credentials.", 20);
+        }
+        if (!nodes.some((node) => node.notes || node.notesInFlow || /stickyNote/i.test(node.type || ""))) {
+          addFinding(findings, "low", "Sparse handoff notes", "No sticky notes or node notes were detected, which makes maintenance harder after launch.", 5);
+        }
+        const disconnected = names.filter((name) => name && !connected.has(name));
+        if (nodes.length > 1 && disconnected.length) {
+          addFinding(findings, "low", "Disconnected nodes", `${disconnected.slice(0, 4).join(", ")}${disconnected.length > 4 ? "..." : ""} did not appear in the connection graph.`, 6);
+        }
+
+        const score = Math.max(0, Math.min(100, 100 - findings.reduce((sum, finding) => sum + finding.weight, 0)));
+        return {
+          score,
+          nodes: nodes.length,
+          edges: countEdges(connections),
+          findings
+        };
+      }
+
+      function render(report) {
+        scoreEl.textContent = report.score;
+        scoreEl.classList.toggle("low", report.score < 60);
+        scoreEl.classList.toggle("mid", report.score >= 60 && report.score < 82);
+        nodeCountEl.textContent = report.nodes;
+        riskCountEl.textContent = report.findings.length;
+        edgeCountEl.textContent = report.edges;
+
+        const status = report.score >= 82 ? "Low risk" : report.score >= 60 ? "Needs hardening" : "High risk";
+        statusEl.textContent = status;
+        headlineEl.textContent = report.findings.length ? "Prioritized findings" : "No major risk patterns detected";
+        summaryEl.textContent = report.findings.length
+          ? "Fix high-severity items first, then add handoff notes and monitoring before client or internal production use."
+          : "This scanner is heuristic, but the export did not trip its core production-risk checks.";
+
+        findingsEl.innerHTML = "";
+        const findings = report.findings.length ? report.findings : [{
+          severity: "low",
+          title: "Manual review still required",
+          detail: "Credentials, live executions, data quality, and exact business rules need environment-level review.",
+          weight: 0
+        }];
+        for (const finding of findings) {
+          const item = document.createElement("article");
+          item.className = "finding";
+          item.innerHTML = `
+            <span class="severity ${finding.severity === "high" ? "high" : finding.severity === "med" ? "med" : "low"}">${finding.severity}</span>
+            <div>
+              <h3>${finding.title}</h3>
+              <p>${finding.detail}</p>
+            </div>
+          `;
+          findingsEl.appendChild(item);
+        }
+
+        latestReport = [
+          `n8n workflow risk score: ${report.score}/100`,
+          `Nodes: ${report.nodes}`,
+          `Links: ${report.edges}`,
+          `Findings: ${report.findings.length}`,
+          "",
+          ...findings.map((finding) => `- [${finding.severity.toUpperCase()}] ${finding.title}: ${finding.detail}`)
+        ].join("\n");
+        emailBtn.href = `mailto:nanznakul@gmail.com?subject=${encodeURIComponent("n8n workflow audit")}&body=${encodeURIComponent(latestReport)}`;
+      }
+
+      function runAnalyze() {
+        try {
+          const workflow = JSON.parse(input.value);
+          render(analyze(workflow));
+        } catch (error) {
+          scoreEl.textContent = "--";
+          statusEl.textContent = "Invalid JSON";
+          headlineEl.textContent = "Parser stopped";
+          summaryEl.textContent = error.message;
+          nodeCountEl.textContent = "0";
+          riskCountEl.textContent = "1";
+          edgeCountEl.textContent = "0";
+          findingsEl.innerHTML = '<article class="finding"><span class="severity high">high</span><div><h3>JSON parse error</h3><p>Export the workflow as JSON or paste the complete object.</p></div></article>';
+        }
+      }
+
+      fileInput.addEventListener("change", async (event) => {
+        const [file] = event.target.files;
+        if (!file) return;
+        input.value = await file.text();
+        runAnalyze();
+      });
+
+      analyzeBtn.addEventListener("click", runAnalyze);
+      sampleBtn.addEventListener("click", () => {
+        input.value = JSON.stringify(sampleWorkflow, null, 2);
+        runAnalyze();
+      });
+      clearBtn.addEventListener("click", () => {
+        input.value = "";
+        latestReport = "";
+        render({ score: 0, nodes: 0, edges: 0, findings: [] });
+        scoreEl.textContent = "--";
+        statusEl.textContent = "Waiting for workflow";
+        headlineEl.textContent = "Production-readiness report";
+        summaryEl.textContent = "Paste an exported n8n workflow to generate a prioritized review.";
+      });
+      copyBtn.addEventListener("click", async () => {
+        if (!latestReport) return;
+        await navigator.clipboard.writeText(latestReport);
+        copyBtn.textContent = "Copied";
+        window.setTimeout(() => { copyBtn.textContent = "Copy report"; }, 1400);
+      });
+    </script>
+  </body>
+</html>

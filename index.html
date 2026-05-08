@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Fast AI Revenue Systems</title>
     <meta name="description" content="48-hour mini-stores, quote flows, and AI-assisted workflow systems for small businesses.">
+    <link rel="icon" href="data:,">
     <style>
       :root {
         --ink: #151515;
@@ -62,6 +63,7 @@
         display: flex;
         gap: 18px;
         color: var(--muted);
+        font-weight: 720;
       }
 
       .hero {
@@ -166,7 +168,7 @@
 
       .offers {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 16px;
         margin-top: 30px;
       }
@@ -213,6 +215,11 @@
         color: var(--muted);
       }
 
+      .tile a {
+        color: var(--accent);
+        font-weight: 850;
+      }
+
       footer {
         display: flex;
         justify-content: space-between;
@@ -222,6 +229,12 @@
         color: var(--muted);
       }
 
+      @media (max-width: 1020px) {
+        .offers {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
       @media (max-width: 860px) {
         header, footer {
           align-items: flex-start;
@@ -229,7 +242,6 @@
         }
 
         .hero,
-        .offers,
         .grid {
           grid-template-columns: 1fr;
         }
@@ -240,17 +252,24 @@
           padding-bottom: 3px;
         }
       }
+
+      @media (max-width: 620px) {
+        .offers {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
     <header>
-      <a class="brand" href="/">
+      <a class="brand" href="./">
         <span class="mark">AI</span>
         <span>Fast AI Revenue Systems</span>
       </a>
       <nav aria-label="Main navigation">
         <a href="#offers">Offers</a>
-        <a href="/power-tools/">Demo</a>
+        <a href="power-tools/">Demo</a>
+        <a href="n8n-audit/">n8n Scanner</a>
         <a href="#next">Next step</a>
       </nav>
     </header>
@@ -267,7 +286,7 @@
           </p>
           <div class="actions">
             <a class="btn primary" href="mailto:nanznakul@gmail.com?subject=48-hour%20AI%20system%20pilot">Request a pilot</a>
-            <a class="btn" href="/power-tools/">View sample demo</a>
+            <a class="btn" href="power-tools/">View sample demo</a>
           </div>
         </div>
         <aside class="proof" aria-label="System examples">
@@ -282,6 +301,10 @@
           <div class="proof-row">
             <strong>AI workflow assistant</strong>
             <span>Simple tools for intake sorting, summaries, and next actions.</span>
+          </div>
+          <div class="proof-row">
+            <strong>n8n workflow risk scanner</strong>
+            <span>Browser-side JSON review for retries, error paths, and handoff risks.</span>
           </div>
         </aside>
       </section>
@@ -306,6 +329,11 @@
             <p>One repetitive workflow turned into a simple AI-assisted dashboard, script, or spreadsheet automation.</p>
             <strong>₹1,50,000</strong>
           </article>
+          <article class="offer">
+            <h3>n8n Audit</h3>
+            <p>Risk scan, remediation notes, and a fixed first slice for workflows already running in Make or n8n.</p>
+            <strong>$299</strong>
+          </article>
         </div>
       </section>
 
@@ -320,6 +348,10 @@
           <article class="tile">
             <h3>What to send</h3>
             <p>A short description of the workflow, sample products or fields, and where requests should land: email, spreadsheet, WhatsApp, or dashboard.</p>
+          </article>
+          <article class="tile">
+            <h3>Workflow scanner</h3>
+            <p><a href="n8n-audit/">Run the n8n risk scan</a> before booking a remediation slice.</p>
           </article>
         </div>
       </section>
