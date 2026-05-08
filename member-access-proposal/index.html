@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Skool, Zendo, Airtable, Rewardful, and Stripe Integration Plan</title>
+    <meta name="description" content="A fixed-scope Make integration plan for connecting Stripe payments, Skool access, Rewardful attribution, Airtable records, and Zendo client operations.">
+    <style>
+      :root {
+        --ink: #17201f;
+        --muted: #63706d;
+        --paper: #f7f4ee;
+        --panel: #ffffff;
+        --line: #d8d1c4;
+        --accent: #0f7c6b;
+        --gold: #c48a2c;
+        --deep: #243b3a;
+        --soft: #e6efe9;
+        --warn: #fff1d9;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      a { color: inherit; text-decoration: none; }
+
+      header, section, footer { padding-inline: clamp(18px, 4vw, 56px); }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 72px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 850;
+      }
+
+      .mark {
+        display: grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 6px;
+        background: var(--deep);
+        color: #fff;
+      }
+
+      nav {
+        display: flex;
+        gap: 18px;
+        color: var(--muted);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.02fr) minmax(330px, 0.98fr);
+        gap: clamp(28px, 6vw, 76px);
+        align-items: center;
+        min-height: calc(100svh - 72px);
+        padding-block: clamp(52px, 7vw, 92px);
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        color: var(--accent);
+        font-size: 0.78rem;
+        font-weight: 850;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      h1, h2, h3, p { margin-top: 0; }
+
+      h1 {
+        max-width: 13ch;
+        margin-bottom: 18px;
+        font-size: clamp(2.9rem, 6.2vw, 6rem);
+        line-height: 0.96;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin-bottom: 12px;
+        font-size: clamp(2rem, 4vw, 3.1rem);
+        line-height: 1.04;
+        letter-spacing: 0;
+      }
+
+      h3 {
+        margin-bottom: 8px;
+        font-size: 1.06rem;
+      }
+
+      .lead {
+        max-width: 720px;
+        color: var(--muted);
+        font-size: 1.13rem;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 26px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 12px 16px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-weight: 850;
+      }
+
+      .btn.primary {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .flow {
+        display: grid;
+        gap: 12px;
+        padding: clamp(18px, 3vw, 28px);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 18px 54px rgba(36, 59, 58, 0.12);
+      }
+
+      .node {
+        display: grid;
+        grid-template-columns: 56px 1fr;
+        gap: 14px;
+        align-items: center;
+        min-height: 72px;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fbfbf8;
+      }
+
+      .node strong { display: block; }
+
+      .node span {
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        border-radius: 6px;
+        background: var(--soft);
+        color: var(--deep);
+        font-weight: 900;
+      }
+
+      .node p {
+        margin-bottom: 0;
+        color: var(--muted);
+      }
+
+      .join {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .band {
+        padding-block: clamp(56px, 7vw, 92px);
+        background: var(--deep);
+        color: #fff;
+      }
+
+      .band .lead { color: rgba(255, 255, 255, 0.76); }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 28px;
+      }
+
+      .tile {
+        min-height: 236px;
+        padding: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .tile p { color: rgba(255, 255, 255, 0.74); }
+
+      .section { padding-block: clamp(56px, 7vw, 92px); }
+
+      .plans {
+        display: grid;
+        grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+        gap: 16px;
+        margin-top: 28px;
+      }
+
+      .plan {
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .plan.highlight {
+        background: var(--warn);
+      }
+
+      .price {
+        display: block;
+        margin: 8px 0 12px;
+        color: var(--accent);
+        font-size: clamp(2.7rem, 5vw, 4.5rem);
+        font-weight: 900;
+        line-height: 1;
+      }
+
+      .checklist {
+        display: grid;
+        gap: 10px;
+        margin: 18px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .checklist li {
+        padding: 11px 12px;
+        border-radius: 6px;
+        background: #f0ebe1;
+      }
+
+      .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 28px;
+      }
+
+      .detail {
+        padding: 22px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+      }
+
+      .detail p { color: var(--muted); }
+
+      footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding-block: 24px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+      }
+
+      @media (max-width: 1120px) {
+        .grid, .detail-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 880px) {
+        header, footer {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .hero, .plans, .grid, .detail-grid, .join {
+          grid-template-columns: 1fr;
+        }
+
+        nav {
+          width: 100%;
+          overflow-x: auto;
+          padding-bottom: 3px;
+        }
+
+        h1 { max-width: 11ch; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/fast-ai-revenue-systems/">
+        <span class="mark">MA</span>
+        <span>Member Access Integration</span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a href="#flow">Flow</a>
+        <a href="#scope">Scope</a>
+        <a href="#start">Start</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">For Pete's Make integration post</p>
+          <h1>Connect payment, access, affiliate, and client records</h1>
+          <p class="lead">
+            A practical Make build for Skool, Zendo, Airtable, Rewardful, and Stripe:
+            one source of truth for the buyer, clean access provisioning, affiliate
+            attribution, and a small operations trail your team can inspect.
+          </p>
+          <div class="actions">
+            <a class="btn primary" href="mailto:nanznakul@gmail.com?subject=Skool%20Zendo%20Airtable%20Rewardful%20Stripe%20integration">Start with audit</a>
+            <a class="btn" href="#scope">View build scope</a>
+          </div>
+        </div>
+        <aside class="flow" aria-label="Integration flow diagram">
+          <article class="node">
+            <span>01</span>
+            <div>
+              <strong>Stripe payment event</strong>
+              <p>Checkout, subscription, refund, or failed-payment webhook enters Make.</p>
+            </div>
+          </article>
+          <div class="join">
+            <article class="node">
+              <span>02</span>
+              <div>
+                <strong>Rewardful attribution</strong>
+                <p>Affiliate and campaign metadata are attached before records split.</p>
+              </div>
+            </article>
+            <article class="node">
+              <span>03</span>
+              <div>
+                <strong>Airtable record</strong>
+                <p>Contact, purchase, access status, and support notes stay queryable.</p>
+              </div>
+            </article>
+          </div>
+          <div class="join">
+            <article class="node">
+              <span>04</span>
+              <div>
+                <strong>Skool access</strong>
+                <p>Invite or access state follows paid, refunded, and failed events.</p>
+              </div>
+            </article>
+            <article class="node">
+              <span>05</span>
+              <div>
+                <strong>Zendo operations</strong>
+                <p>Client workspace, request, or task trail is created for delivery.</p>
+              </div>
+            </article>
+          </div>
+        </aside>
+      </section>
+
+      <section class="band" id="flow">
+        <p class="eyebrow">What gets protected</p>
+        <h2>The fragile parts are identifiers, status changes, and retries</h2>
+        <p class="lead">
+          The build should be boring in production: every payment event maps to the
+          right person, access is reversible, affiliate data is preserved, and failed
+          modules produce visible logs instead of silent manual cleanup.
+        </p>
+        <div class="grid">
+          <article class="tile">
+            <h3>Identity Mapping</h3>
+            <p>Email, Stripe customer ID, Airtable record ID, Rewardful referral, and Skool/Zendo identifiers are kept aligned.</p>
+          </article>
+          <article class="tile">
+            <h3>Access Rules</h3>
+            <p>Paid, trial, failed, canceled, and refunded states can each trigger the correct Skool and Zendo action.</p>
+          </article>
+          <article class="tile">
+            <h3>Audit Trail</h3>
+            <p>Each event stores enough context in Airtable to debug duplicates, disputes, missed invites, or affiliate questions.</p>
+          </article>
+          <article class="tile">
+            <h3>Failure Handling</h3>
+            <p>Make error routes, retries, and notifications keep issues inspectable without turning into spreadsheet archaeology.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="scope">
+        <p class="eyebrow">Fixed scope</p>
+        <h2>Start small, then harden the flow that matters</h2>
+        <div class="plans" id="start">
+          <article class="plan highlight">
+            <span>Low-risk first step</span>
+            <strong class="price">$299</strong>
+            <p>Architecture audit and build plan for the exact purchase, access, affiliate, and record-sync flow. Credited toward the full sprint if started within 7 days.</p>
+            <ul class="checklist">
+              <li>Trigger and API capability check</li>
+              <li>Field map for Stripe, Rewardful, Airtable, Skool, and Zendo</li>
+              <li>Failure modes, manual fallback, and fixed sprint quote</li>
+            </ul>
+          </article>
+          <article class="plan">
+            <span>Implementation sprint</span>
+            <strong class="price">$1,250</strong>
+            <p>One production-ready Make workflow for the main payment-to-access path, including logs, test cases, and a handoff guide.</p>
+            <ul class="checklist">
+              <li>Stripe webhook intake and event filtering</li>
+              <li>Airtable source-of-truth records and duplicate checks</li>
+              <li>Rewardful attribution preservation</li>
+              <li>Skool and Zendo action modules or API calls where available</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <p class="eyebrow">Inputs needed</p>
+        <h2>What I would ask for before build</h2>
+        <div class="detail-grid">
+          <article class="detail">
+            <h3>Main flow</h3>
+            <p>The first successful path to automate, such as Stripe purchase to Skool access plus Airtable and Zendo record creation.</p>
+          </article>
+          <article class="detail">
+            <h3>Event policy</h3>
+            <p>What should happen on refunds, failed payments, canceled subscriptions, duplicate customers, and affiliate corrections.</p>
+          </article>
+          <article class="detail">
+            <h3>Access method</h3>
+            <p>Whether Skool and Zendo should be handled through native Make modules, API/webhook routes, or a controlled manual approval step.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Member Access Integration</span>
+      <span>Stripe, Skool, Zendo, Airtable, Rewardful, and Make.</span>
+    </footer>
+  </body>
+</html>
