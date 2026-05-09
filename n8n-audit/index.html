@@ -418,7 +418,7 @@
       <nav aria-label="Main navigation">
         <a href="sample-report.html">Sample Report</a>
         <a href="../workflow-sprint/">Audit Sprint</a>
-        <a href="mailto:nanznakul@gmail.com?subject=n8n%20workflow%20audit">Email</a>
+        <a href="https://github.com/anonymusk7/fast-ai-revenue-systems/issues/new?title=n8n%20workflow%20audit%20request&body=Please%20review%20one%20n8n%20workflow%20for%20the%20fixed%20%24299%20audit.%0A%0AWorkflow%20or%20process%20summary%3A%0A%0APreferred%20next%20step%3A%0A%0ANote%3A%20do%20not%20paste%20secrets%2C%20credentials%2C%20or%20private%20customer%20data.">Intake</a>
       </nav>
     </header>
 
@@ -484,7 +484,7 @@
           <p><strong>$299 fixed audit.</strong> Credited toward a $1,250 remediation slice for error handling, retries, observability, and handoff docs.</p>
           <div class="actions">
             <button class="green" id="copyBtn" type="button">Copy report</button>
-            <a class="btn primary" id="emailBtn" href="mailto:nanznakul@gmail.com?subject=n8n%20workflow%20audit">Request audit</a>
+            <a class="btn primary" id="intakeBtn" href="https://github.com/anonymusk7/fast-ai-revenue-systems/issues/new?title=n8n%20workflow%20audit%20request&body=Please%20review%20one%20n8n%20workflow%20for%20the%20fixed%20%24299%20audit.%0A%0AWorkflow%20or%20process%20summary%3A%0A%0APreferred%20next%20step%3A%0A%0ANote%3A%20do%20not%20paste%20secrets%2C%20credentials%2C%20or%20private%20customer%20data.">Request audit</a>
             <a class="btn" href="sample-report.html">View sample report</a>
           </div>
         </div>
@@ -503,7 +503,7 @@
       const sampleBtn = document.querySelector("#sampleBtn");
       const clearBtn = document.querySelector("#clearBtn");
       const copyBtn = document.querySelector("#copyBtn");
-      const emailBtn = document.querySelector("#emailBtn");
+      const intakeBtn = document.querySelector("#intakeBtn");
       const scoreEl = document.querySelector("#score");
       const statusEl = document.querySelector("#status");
       const headlineEl = document.querySelector("#headline");
@@ -530,6 +530,7 @@
       };
 
       let latestReport = "";
+      const intakeBase = "https://github.com/anonymusk7/fast-ai-revenue-systems/issues/new";
 
       function countEdges(connections) {
         if (!connections || typeof connections !== "object") return 0;
@@ -667,7 +668,17 @@
           "",
           ...findings.map((finding) => `- [${finding.severity.toUpperCase()}] ${finding.title}: ${finding.detail}`)
         ].join("\n");
-        emailBtn.href = `mailto:nanznakul@gmail.com?subject=${encodeURIComponent("n8n workflow audit")}&body=${encodeURIComponent(latestReport)}`;
+        const issueBody = [
+          "Please review one n8n workflow for the fixed $299 audit.",
+          "",
+          "Scanner output:",
+          latestReport.slice(0, 5500),
+          "",
+          "Preferred next step:",
+          "",
+          "Note: do not paste secrets, credentials, or private customer data."
+        ].join("\n");
+        intakeBtn.href = `${intakeBase}?title=${encodeURIComponent("n8n workflow audit request")}&body=${encodeURIComponent(issueBody)}`;
       }
 
       function runAnalyze() {
